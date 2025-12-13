@@ -49,9 +49,6 @@ const Register = () => {
     }));
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-
     if (password !== confirmpassword) {
       alert('Las contraseñas no coinciden'); // O toast.error
       return;
