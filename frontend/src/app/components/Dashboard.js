@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import HerramientaForm from '../components/HerramientaForm';
@@ -15,6 +15,14 @@ function Dashboard() {
     const { herramientas, isLoading, isError, message } = useSelector(
         (state) => state.herramientas
     );
+
+    // 1. Estado para saber si estamos editando (null = modo crear)
+    const [herramientaEditar, setHerramientaEditar] = useState(null);
+
+    // 2. Pasamos esta función al HerramientaItem para que al dar click "active" la edición
+    const activarEdicion = (herramienta) => {
+        setHerramientaEditar(herramienta);
+    };
 
     useEffect(() => {
         if (isError) {
@@ -45,13 +53,20 @@ function Dashboard() {
                 <p>Panel de Renta de Herramientas</p>
             </section>
 
-            <HerramientaForm />
+            <HerramientaForm 
+                herramientaEditar={herramientaEditar} 
+                setHerramientaEditar={setHerramientaEditar} 
+            />
 
             <section className='content'>
                 {herramientas.length > 0 ? (
                     <div className='herramientas'>
                         {herramientas.map((herramienta) => (
-                            <HerramientaItem key={herramienta._id} herramienta={herramienta} />
+                            <HerramientaItem 
+                                key={herramienta._id} 
+                                herramienta={herramienta}
+                                activarEdicion={activarEdicion} // <--- Pasamos la función
+                            />
                         ))}
                     </div>
                 ) : (

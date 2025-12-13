@@ -52,6 +52,20 @@ export const borrarHerramienta = createAsyncThunk(
     }
 );
 
+// Actualizar herramienta (NUEVO)
+export const actualizarHerramienta = createAsyncThunk(
+    'herramientas/actualizar',
+    async ({ id, herramientaData }, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await herramientasService.actualizarHerramienta(id, herramientaData, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const herramientasSlice = createSlice({
     name: 'herramienta',
     initialState,
@@ -90,6 +104,23 @@ export const herramientasSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 state.herramientas = state.herramientas.filter((h) => h._id !== action.payload);
+            })
+            // Cases para Actualizar (AGREGAR ESTO)
+            .addCase(actualizarHerramienta.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(actualizarHerramienta.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                // Buscamos la herramienta vieja en el array y la reemplazamos por la nueva
+                state.herramientas = state.herramientas.map((herramienta) =>
+                    herramienta._id === action.payload._id ? action.payload : herramienta
+                );
+            })
+            .addCase(actualizarHerramienta.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
     }
 });

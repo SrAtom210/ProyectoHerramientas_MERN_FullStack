@@ -35,9 +35,22 @@ const borrarHerramienta = async (herramientaId, token) => {
     return response.data;
 };
 
+// Actualizar herramienta
+const actualizarHerramienta = async (id, herramientaData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+    // Ojo: En PUT enviamos la URL con el ID + los datos nuevos
+    const response = await axios.put(API_URL + id, herramientaData, config);
+    return response.data;
+};
+
 const herramientasService = {
     crearHerramienta,
     obtenerHerramientas,
+    actualizarHerramienta, // <--- No olvides exportarla
     borrarHerramienta
 };
 

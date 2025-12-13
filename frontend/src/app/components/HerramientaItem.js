@@ -1,8 +1,9 @@
 import { useDispatch } from 'react-redux';
 import { borrarHerramienta } from '../merkmale/herramientasSlice';
-import { FaTrash } from 'react-icons/fa'; // Asegúrate de tener react-icons instalado
+import { FaTrash, FaPen } from 'react-icons/fa'; // Importa FaPen
 
-function HerramientaItem({ herramienta }) {
+
+function HerramientaItem({ herramienta, activarEdicion }) { // Recibe la prop
     const dispatch = useDispatch();
 
     return (
@@ -15,9 +16,14 @@ function HerramientaItem({ herramienta }) {
             <p>Precio: ${herramienta.precio} / día</p>
             <p className='descripcion'>{herramienta.descripcion}</p>
             
-            <button onClick={() => dispatch(borrarHerramienta(herramienta._id))} className='close'>
-                <FaTrash />
-            </button>
+            <div className="botones-acciones" style={{position: 'absolute', top: '10px', right: '15px'}}>
+                <button onClick={() => activarEdicion(herramienta)} className='btn-icon' style={{border: 'none', background: 'transparent', color: 'blue', cursor: 'pointer', marginRight: '10px'}}>
+                    <FaPen />
+                </button>
+                <button onClick={() => dispatch(borrarHerramienta(herramienta._id))} className='btn-icon' style={{border: 'none', background: 'transparent', color: 'red', cursor: 'pointer'}}>
+                    <FaTrash />
+                </button>
+            </div>
         </div>
     );
 }
