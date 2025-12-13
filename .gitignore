@@ -1,0 +1,17 @@
+# Dependencias (Pesadísimas, nunca se suben)
+node_modules/
+*/node_modules/
+
+# Variables de Entorno (Secretos, nunca se suben)
+.env
+backend/.env
+frontend/.env
+
+# Archivos de compilación (Se generan solos)
+build/
+dist/
+
+# Logs y sistemas
+*.log
+.DS_Store
+.vscode/
