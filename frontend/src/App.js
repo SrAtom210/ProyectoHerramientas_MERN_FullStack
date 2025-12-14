@@ -8,6 +8,7 @@ import Login from './app/components/Login';
 import Registro from './app/components/Registro';
 import Header from './app/components/Header';
 import MisRentas from './app/components/MisRentas'; // ✅ NUEVO: Importamos el archivo
+import HerramientaDetalles from './app/components/HerramientaDetalles';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             
             {/* ✅ NUEVO: La ruta para ver mis rentas */}
             <Route path='/mis-rentas' element={<MisRentas />} />
+            <Route path="/herramienta/:id" element={<HerramientaDetalles />} />
           </Routes>
         </div>
       </Router>

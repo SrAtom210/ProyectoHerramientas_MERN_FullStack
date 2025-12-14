@@ -5,9 +5,11 @@ import { borrarHerramienta } from '../features/herramientasSlice';
 import { crearRenta } from '../features/rentaSlice'; // 1. Importamos la acción de rentar
 import { FaEdit, FaTrash, FaShoppingCart } from 'react-icons/fa'; // Icono de carrito
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 function HerramientaItem({ herramienta, activarEdicion }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Función para rentar
   const onRentar = () => {
@@ -38,7 +40,7 @@ function HerramientaItem({ herramienta, activarEdicion }) {
       {/* BOTÓN DE RENTAR (Nuevo) */}
       <button 
         className='btn btn-block' 
-        onClick={onRentar}
+        onClick={() => navigate(`/herramienta/${herramienta._id}`)}
         style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
       >
         <FaShoppingCart /> Rentar Ahora

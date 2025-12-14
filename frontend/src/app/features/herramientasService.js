@@ -25,6 +25,16 @@ const obtenerHerramientas = async (token) => {
     return response.data;
 };
 
+const obtenerUnaHerramienta = async (id, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+    const response = await axios.get(API_URL + id, config);
+    return response.data;
+};
+
 // Borrar herramienta
 const borrarHerramienta = async (herramientaId, token) => {
     const config = {
@@ -51,6 +61,7 @@ const actualizarHerramienta = async (id, herramientaData, token) => {
 const herramientasService = {
     crearHerramienta,
     obtenerHerramientas,
+    obtenerUnaHerramienta,
     actualizarHerramienta, // <--- No olvides exportarla
     borrarHerramienta
 };

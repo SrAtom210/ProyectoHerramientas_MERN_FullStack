@@ -1,17 +1,15 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-//import { obtenerMisRentas, reset } from '../../features/rentaSlice'; // Importamos el slice
 import { obtenerMisRentas, reset } from '../features/rentaSlice';
 import Spinner from './Spinner';
-import { /*FaHammer,*/ FaCalendarAlt } from 'react-icons/fa';
+import { FaCalendarAlt } from 'react-icons/fa'; // ✅ CORREGIDO: Se quitó FaHammer que no se usaba
 
 function MisRentas() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  // Traemos las rentas del estado global
   const { rentas, isLoading, isError, message } = useSelector(
     (state) => state.rentas
   );
@@ -24,11 +22,9 @@ function MisRentas() {
     if (!user) {
       navigate('/login');
     } else {
-      // Al entrar, pedimos las rentas al backend
       dispatch(obtenerMisRentas());
     }
 
-    // Al salir, limpiamos
     return () => {
       dispatch(reset());
     };
@@ -45,7 +41,6 @@ function MisRentas() {
         <p>Herramientas que tienes actualmente</p>
       </section>
 
-      {/* Usamos la misma clase 'content' para que se vea en rejilla de 3 */}
       <section className='content'>
         {rentas.length > 0 ? (
           rentas.map((renta) => (
@@ -56,7 +51,7 @@ function MisRentas() {
                 {new Date(renta.createdAt).toLocaleDateString('es-MX')}
               </div>
 
-              {/* Título de la Herramienta (Usamos ?. por si se borró la herramienta original) */}
+              {/* Título de la Herramienta (Protección por si se borró la herramienta original) */}
               <h2>{renta.herramienta?.nombre || 'Herramienta no disponible'}</h2>
               <p>Marca: {renta.herramienta?.marca}</p>
 

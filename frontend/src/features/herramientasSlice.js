@@ -37,6 +37,25 @@ export const obtenerHerramientas = createAsyncThunk(
     }
 );
 
+// Obtener una herramienta por ID
+export const obtenerUnaHerramienta = createAsyncThunk(
+  'herramientas/obtenerUna', // Nombre de la acción interna de Redux
+  async (id, thunkAPI) => {
+    try {
+      // Llama a la función del servicio (ver paso 2 abajo)
+      return await herramientaService.obtenerUnaHerramienta(id);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Borrar herramienta
 export const borrarHerramienta = createAsyncThunk(
     'herramientas/borrar',

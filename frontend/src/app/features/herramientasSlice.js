@@ -66,11 +66,30 @@ export const actualizarHerramienta = createAsyncThunk(
     }
 );
 
+export const obtenerUnaHerramienta = createAsyncThunk(
+    'herramientas/obtenerUna',
+    async (id, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await herramientasService.obtenerUnaHerramienta(id, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const herramientasSlice = createSlice({
     name: 'herramienta',
     initialState,
     reducers: {
-        reset: (state) => initialState // Resetea todo el estado de herramientas
+        reset: (state) => {
+            state.isError = false;
+            state.isSuccess = false;
+            state.isLoading = false;
+            state.message = '';
+            state.herramientaActiva = null;
+        }//initialState // Resetea todo el estado de herramientas
     },
     extraReducers: (builder) => {
         builder
@@ -118,6 +137,20 @@ export const herramientasSlice = createSlice({
                 );
             })
             .addCase(actualizarHerramienta.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(obtenerUnaHerramienta.pending, (state) => {
+                state.isLoading = true;
+                state.herramientaActiva = null; // Limpiamos la anterior mientras carga
+            })
+            .addCase(obtenerUnaHerramienta.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.herramientaActiva = action.payload; // ¡Aquí guardamos los datos reales!
+            })
+            .addCase(obtenerUnaHerramienta.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
