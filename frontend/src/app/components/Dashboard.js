@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import HerramientaForm from '../components/HerramientaForm';
-import HerramientaItem from '../components/HerramientaItem';
-import Spinner from '../components/Spinner';
-import { reset, obtenerHerramientas } from '../../features/herramientasSlice';
+import HerramientaForm from './HerramientaForm'; // (Verifica si es ./ o ../components)
+import HerramientaItem from './HerramientaItem';
+import Spinner from './Spinner';
+//import { reset, obtenerHerramientas } from '../../features/herramientasSlice'; // (Verifica la ruta ../../features)
+import { reset, obtenerHerramientas } from '../features/herramientasSlice';
 
 function Dashboard() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const { user } = useSelector((state) => state.auth);
-    // Extraemos el estado de herramientas
     const { herramientas, isLoading, isError, message } = useSelector(
         (state) => state.herramientas
     );
 
-    // 1. Estado para saber si estamos editando (null = modo crear)
     const [herramientaEditar, setHerramientaEditar] = useState(null);
 
-    // 2. Pasamos esta función al HerramientaItem para que al dar click "active" la edición
     const activarEdicion = (herramienta) => {
         setHerramientaEditar(herramienta);
     };
@@ -32,11 +30,9 @@ function Dashboard() {
         if (!user) {
             navigate('/login');
         } else {
-            // Solo intentamos obtener herramientas si hay usuario
             dispatch(obtenerHerramientas());
         }
 
-        // Al salir del dashboard, reseteamos el estado de herramientas
         return () => {
             dispatch(reset());
         };
@@ -60,17 +56,20 @@ function Dashboard() {
 
             <section className='content'>
                 {herramientas.length > 0 ? (
-                    <div className='herramientas'>
-                        {herramientas.map((herramienta) => (
-                            <HerramientaItem 
-                                key={herramienta._id} 
-                                herramienta={herramienta}
-                                activarEdicion={activarEdicion} // <--- Pasamos la función
-                            />
-                        ))}
-                    </div>
+                    /* CORRECCIÓN: Quitamos el <div className='herramientas'> */
+                    /* Ahora los items son hijos directos de 'content' y el CSS Grid funcionará */
+                    herramientas.map((herramienta) => (
+                        <HerramientaItem 
+                            key={herramienta._id} 
+                            herramienta={herramienta}
+                            activarEdicion={activarEdicion} 
+                        />
+                    ))
                 ) : (
-                    <h3>No has publicado herramientas aún</h3>
+                    /* Mensaje cuando no hay nada (Ocupará toda la fila o se verá solo) */
+                    <h3 style={{gridColumn: '1 / -1', textAlign: 'center', color: '#a1a1aa'}}>
+                        No has publicado herramientas aún
+                    </h3>
                 )}
             </section>
         </>

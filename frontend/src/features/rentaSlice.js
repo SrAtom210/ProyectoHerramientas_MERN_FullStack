@@ -1,0 +1,84 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import rentaService from './rentaService';
+
+const initialState = {
+  rentas: [],
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: '',
+};
+
+// Crear nueva renta
+export const crearRenta = createAsyncThunk(
+  'rentas/crear',
+  async (rentaData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await rentaService.crearRenta(rentaData, token);
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Obtener mis rentas
+export const obtenerMisRentas = createAsyncThunk(
+  'rentas/obtenerMias',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await rentaService.obtenerMisRentas(token);
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const rentaSlice = createSlice({
+  name: 'renta',
+  initialState,
+  reducers: {
+    reset: (state) => initialState,
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(crearRenta.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(crearRenta.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.rentas.push(action.payload);
+      })
+      .addCase(crearRenta.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(obtenerMisRentas.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(obtenerMisRentas.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.rentas = action.payload;
+      })
+      .addCase(obtenerMisRentas.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      });
+  },
+});
+
+export const { reset } = rentaSlice.actions;
+export default rentaSlice.reducer;

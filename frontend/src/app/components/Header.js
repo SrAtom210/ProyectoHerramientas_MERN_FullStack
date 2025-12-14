@@ -1,12 +1,19 @@
-import { FaSignInAlt, FaSignOutAlt, FaUser, FaClipboardList } from 'react-icons/fa'; // Agregué icono FaClipboardList
-import { Link, useNavigate } from 'react-router-dom';
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaClipboardList, FaHammer } from 'react-icons/fa';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout, reset } from '../../features/authSlice';
+//import { logout, reset } from '../features/authSlice'; // Asegúrate que la ruta sea correcta (features/merkmale)
+import { logout, reset } from '../features/authSlice';
 
 function Header() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
     const { user } = useSelector((state) => state.auth);
+
+    // Ocultar Header en Login y Registro
+    if (location.pathname === '/login' || location.pathname === '/registro') {
+        return null;
+    }
 
     const onLogout = () => {
         dispatch(logout());
@@ -17,22 +24,23 @@ function Header() {
     return (
         <header className='header'>
             <div className='logo'>
-                <Link to='/'>Renta de Herramientas</Link>
+                <Link to='/'>
+                    {/* Icono del Martillo y Texto */}
+                    <FaHammer size={24} /> RentaTools
+                </Link>
             </div>
             <ul>
                 {user ? (
-                    <> {/* <--- Agregamos fragmento aquí también porque ahora hay 2 elementos */}
-                        {/* BOTÓN NUEVO: Mis Rentas */}
+                    <>
                         <li>
                             <Link to='/mis-rentas'>
                                 <FaClipboardList /> Mis Rentas
                             </Link>
                         </li>
-                        
-                        {/* BOTÓN: Logout */}
                         <li>
+                            {/* CAMBIO CLAVE: Usamos 'btn' para que el CSS (.header .btn) lo detecte */}
                             <button className='btn' onClick={onLogout}>
-                                <FaSignOutAlt /> Logout
+                                <FaSignOutAlt /> Salir
                             </button>
                         </li>
                     </>
@@ -40,12 +48,12 @@ function Header() {
                     <>
                         <li>
                             <Link to='/login'>
-                                <FaSignInAlt /> Login
+                                <FaSignInAlt /> Ingresar
                             </Link>
                         </li>
                         <li>
                             <Link to='/registro'>
-                                <FaUser /> Registro
+                                <FaUser /> Registrarse
                             </Link>
                         </li>
                     </>
