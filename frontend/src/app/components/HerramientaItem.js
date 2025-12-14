@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { borrarHerramienta } from '../merkmale/herramientasSlice';
+import { borrarHerramienta } from '../../features/herramientasSlice';
 import { FaTrash, FaPen } from 'react-icons/fa'; // Importa FaPen
 
 

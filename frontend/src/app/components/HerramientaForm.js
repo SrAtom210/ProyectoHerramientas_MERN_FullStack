@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { crearHerramienta, actualizarHerramienta } from '../merkmale/herramientasSlice';
+// Si 'components' y 'app' están al mismo nivel dentro de 'src':
+import { crearHerramienta, actualizarHerramienta } from '../../features/herramientasSlice';
+//import { toast } from 'react-toastify'; // Importamos toast para alertas bonitas (si lo tienes instalado)
 
 function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
-    // Estado local del formulario
     const [formData, setFormData] = useState({
         nombre: '',
         marca: '',
@@ -11,12 +12,9 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         descripcion: ''
     });
 
-    // Desestructuramos para usar en los values de los inputs
     const { nombre, marca, precio, descripcion } = formData;
-
     const dispatch = useDispatch();
 
-    // EFECTO MÁGICO: Si cambia 'herramientaEditar', rellenamos el formulario
     useEffect(() => {
         if (herramientaEditar) {
             setFormData({
@@ -28,7 +26,6 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         }
     }, [herramientaEditar]);
 
-    // Maneja los cambios en los inputs
     const onChange = (e) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -36,30 +33,29 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         }));
     };
 
-    // Maneja el envío del formulario
     const onSubmit = (e) => {
         e.preventDefault();
 
+        // ✅ NUEVO: Validación de seguridad antes de enviar
+        if (precio < 0) {
+            alert("El precio no puede ser negativo"); // O usa toast.error()
+            return; // Detiene la función aquí, no envía nada
+        }
+
         if (herramientaEditar) {
-            // --- MODO EDICIÓN ---
             const datosActualizados = {
                 id: herramientaEditar._id,
                 herramientaData: { nombre, marca, precio, descripcion }
             };
             dispatch(actualizarHerramienta(datosActualizados));
-            
-            // Salimos del modo edición
             setHerramientaEditar(null);
         } else {
-            // --- MODO CREACIÓN ---
             dispatch(crearHerramienta({ nombre, marca, precio, descripcion }));
         }
 
-        // Limpiamos el formulario
         setFormData({ nombre: '', marca: '', precio: '', descripcion: '' });
     };
 
-    // Botón para cancelar la edición y limpiar todo
     const cancelarEdicion = () => {
         setHerramientaEditar(null);
         setFormData({ nombre: '', marca: '', precio: '', descripcion: '' });
@@ -68,7 +64,7 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
     return (
         <section className='form'>
             <h3>
-                {herramientaEditar ? '✏️ Editar Herramienta' : '➕ Nueva Herramienta'}
+                {herramientaEditar ? 'Editar Herramienta' : 'Nueva Herramienta'}
             </h3>
             
             <form onSubmit={onSubmit}>
@@ -82,6 +78,7 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         onChange={onChange} 
                         className='form-control' 
                         placeholder='Ej: Taladro Percutor'
+                        required // ✅ Obligatorio
                     />
                 </div>
                 
@@ -95,11 +92,13 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         onChange={onChange} 
                         className='form-control' 
                         placeholder='Ej: Bosch, Truper'
+                        required // ✅ Obligatorio
                     />
                 </div>
                 
                 <div className='form-group'>
                     <label htmlFor="precio">Precio de renta (MXN)</label>
+                    {/* ✅ NUEVO: Atributos de validación numérica */}
                     <input 
                         type='number' 
                         name='precio' 
@@ -108,6 +107,10 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         onChange={onChange} 
                         className='form-control' 
                         placeholder='0.00'
+                        min='0'        // Evita negativos en el spinner
+                        step='0.01'    // Permite decimales
+                        onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} // Bloquea tecla 'e' y signos manuales
+                        required 
                     />
                 </div>
                 
@@ -119,7 +122,7 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         value={descripcion} 
                         onChange={onChange} 
                         className='form-control'
-                        placeholder='Detalles del estado de la herramienta...'
+                        placeholder='Detalles del estado...'
                     ></textarea>
                 </div>
 
@@ -128,7 +131,6 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         {herramientaEditar ? 'Actualizar Herramienta' : 'Agregar Herramienta'}
                     </button>
                     
-                    {/* Botón de Cancelar (Solo aparece si estamos editando) */}
                     {herramientaEditar && (
                         <button 
                             type="button" 

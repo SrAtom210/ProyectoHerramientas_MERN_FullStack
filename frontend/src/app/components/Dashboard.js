@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import HerramientaForm from '../components/HerramientaForm';
 import HerramientaItem from '../components/HerramientaItem';
 import Spinner from '../components/Spinner';
-import { obtenerHerramientas, reset } from '../merkmale/herramientasSlice';
+import { reset, obtenerHerramientas } from '../../features/herramientasSlice';
 
 function Dashboard() {
     const navigate = useNavigate();

@@ -1,0 +1,58 @@
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaClipboardList } from 'react-icons/fa'; // Agregué icono FaClipboardList
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, reset } from '../../features/authSlice';
+
+function Header() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.auth);
+
+    const onLogout = () => {
+        dispatch(logout());
+        dispatch(reset());
+        navigate('/');
+    };
+
+    return (
+        <header className='header'>
+            <div className='logo'>
+                <Link to='/'>Renta de Herramientas</Link>
+            </div>
+            <ul>
+                {user ? (
+                    <> {/* <--- Agregamos fragmento aquí también porque ahora hay 2 elementos */}
+                        {/* BOTÓN NUEVO: Mis Rentas */}
+                        <li>
+                            <Link to='/mis-rentas'>
+                                <FaClipboardList /> Mis Rentas
+                            </Link>
+                        </li>
+                        
+                        {/* BOTÓN: Logout */}
+                        <li>
+                            <button className='btn' onClick={onLogout}>
+                                <FaSignOutAlt /> Logout
+                            </button>
+                        </li>
+                    </>
+                ) : (
+                    <>
+                        <li>
+                            <Link to='/login'>
+                                <FaSignInAlt /> Login
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/registro'>
+                                <FaUser /> Registro
+                            </Link>
+                        </li>
+                    </>
+                )}
+            </ul>
+        </header>
+    );
+}
+
+export default Header;

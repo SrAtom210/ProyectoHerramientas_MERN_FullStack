@@ -1,24 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import ListadoHerramientas from './components/ListadoHerramientas'; 
-import MisRentas from './components/MisRentas';
-import Login from './components/Login';
-import Register from './components/Register'; // <--- Descomenta o agrega esto
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Importación de Componentes
+import Dashboard from './app/components/Dashboard';
+import Login from './app/components/Login';
+import Registro from './app/components/Registro';
+import Header from './app/components/Header';
+import MisRentas from './app/components/MisRentas'; // ✅ NUEVO: Importamos el archivo
 
 function App() {
   return (
     <>
       <Router>
-        <div className='container'>
+        <div className='Container'>
           <Header />
           <Routes>
-            <Route path='/' element={<ListadoHerramientas />} />
+            {/* Ruta Principal (Dashboard) */}
+            <Route path='/' element={<Dashboard />} />
+            
+            {/* Rutas de Autenticación */}
             <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} /> {/* <--- Descomenta esto */}
+            <Route path='/registro' element={<Registro />} />
+            
+            {/* ✅ NUEVO: La ruta para ver mis rentas */}
             <Route path='/mis-rentas' element={<MisRentas />} />
           </Routes>
         </div>
       </Router>
+      <ToastContainer />
     </>
   );
 }
