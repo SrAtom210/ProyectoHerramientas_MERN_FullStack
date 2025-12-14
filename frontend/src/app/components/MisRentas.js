@@ -1,51 +1,79 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { FaHammer } from 'react-icons/fa'; // Icono opcional para decorar
+import { useSelector, useDispatch } from 'react-redux';
+//import { obtenerMisRentas, reset } from '../../features/rentaSlice'; // Importamos el slice
+import { obtenerMisRentas, reset } from '../features/rentaSlice';
+import Spinner from './Spinner';
+import { /*FaHammer,*/ FaCalendarAlt } from 'react-icons/fa';
 
 function MisRentas() {
   const navigate = useNavigate();
-  // Obtenemos al usuario para verificar si está logueado
+  const dispatch = useDispatch();
+
   const { user } = useSelector((state) => state.auth);
+  // Traemos las rentas del estado global
+  const { rentas, isLoading, isError, message } = useSelector(
+    (state) => state.rentas
+  );
 
   useEffect(() => {
-    // Si no hay usuario, lo mandamos al login (Protección de Ruta)
+    if (isError) {
+      console.log(message);
+    }
+
     if (!user) {
       navigate('/login');
+    } else {
+      // Al entrar, pedimos las rentas al backend
+      dispatch(obtenerMisRentas());
     }
-  }, [user, navigate]);
+
+    // Al salir, limpiamos
+    return () => {
+      dispatch(reset());
+    };
+  }, [user, navigate, isError, message, dispatch]);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className='Container'>
       <section className='heading'>
-        <h1>
-          <FaHammer /> Mis Rentas
-        </h1>
-        <p>Historial de herramientas que has rentado</p>
+        <h1>Mis Rentas</h1>
+        <p>Herramientas que tienes actualmente</p>
       </section>
 
-      {/* AQUÍ MOSTRAREMOS LA LISTA CUANDO TENGAMOS EL BACKEND DE RENTAS */}
-      <section className='content' style={{ textAlign: 'center', marginTop: '50px' }}>
-        <div style={{ 
-            backgroundColor: '#f8f9fa', 
-            padding: '40px', 
-            borderRadius: '10px',
-            border: '1px dashed #ccc'
-        }}>
-            <h3>Historial Vacío (Por ahora)</h3>
-            <p>
-                Aún no has rentado ninguna herramienta. 
-                <br />
-                Cuando rentes equipos, aparecerán listados aquí con su fecha de devolución.
-            </p>
-            <button 
-                className='btn' 
-                onClick={() => navigate('/')} 
-                style={{ marginTop: '20px' }}
-            >
-                Ir a Rentar Herramientas
-            </button>
-        </div>
+      {/* Usamos la misma clase 'content' para que se vea en rejilla de 3 */}
+      <section className='content'>
+        {rentas.length > 0 ? (
+          rentas.map((renta) => (
+            <div key={renta._id} className='herramienta' style={{ borderLeft: '4px solid #eee21a' }}>
+              {/* Fecha de Renta */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <FaCalendarAlt /> 
+                {new Date(renta.createdAt).toLocaleDateString('es-MX')}
+              </div>
+
+              {/* Título de la Herramienta (Usamos ?. por si se borró la herramienta original) */}
+              <h2>{renta.herramienta?.nombre || 'Herramienta no disponible'}</h2>
+              <p>Marca: {renta.herramienta?.marca}</p>
+
+              <div className='precio-tag'>
+                Estado: {renta.estado}
+              </div>
+
+              <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
+                ID Renta: <span style={{ fontFamily: 'monospace' }}>{renta._id.substring(0, 10)}...</span>
+              </p>
+            </div>
+          ))
+        ) : (
+          <h3 style={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+            No has rentado nada aún. ¡Ve al Dashboard a buscar equipos!
+          </h3>
+        )}
       </section>
     </div>
   );

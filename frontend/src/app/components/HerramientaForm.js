@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 // Si 'components' y 'app' están al mismo nivel dentro de 'src':
-import { crearHerramienta, actualizarHerramienta } from '../../features/herramientasSlice';
+//import { crearHerramienta, actualizarHerramienta } from '../../features/herramientasSlice';
+import { crearHerramienta, actualizarHerramienta } from '../features/herramientasSlice';
 //import { toast } from 'react-toastify'; // Importamos toast para alertas bonitas (si lo tienes instalado)
 
 function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
@@ -37,6 +38,11 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         e.preventDefault();
 
         // ✅ NUEVO: Validación de seguridad antes de enviar
+        if (!nombre || !marca || !precio) {
+            alert("Por favor completa todos los campos obligatorios");
+            return;
+        }
+
         if (precio < 0) {
             alert("El precio no puede ser negativo"); // O usa toast.error()
             return; // Detiene la función aquí, no envía nada
@@ -109,7 +115,12 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         placeholder='0.00'
                         min='0'        // Evita negativos en el spinner
                         step='0.01'    // Permite decimales
-                        onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} // Bloquea tecla 'e' y signos manuales
+                        onKeyDown={(evt) => {
+                            const allowedKeys = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Enter"];
+                            if (!allowedKeys.includes(evt.key) && !/^[0-9.]$/.test(evt.key)) {
+                                evt.preventDefault();
+                            }
+                        }}
                         required 
                     />
                 </div>

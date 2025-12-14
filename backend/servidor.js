@@ -27,7 +27,8 @@ app.use((req, res, next) => {
 
 app.use('/api/tareas', require('./rutas/rutasTareas'));
 app.use('/api/usuarios', require('./rutas/rutasUsuarios'));
-app.use('/api/herramientas', require('./rutas/rutasHerramientas')); // <--- AGREGA ESTO
+app.use('/api/herramientas', require('./rutas/rutasHerramientas'));
+app.use('/api/rentas', require('./rutas/rutasRentas'));
 // ...
 
 app.get('/', (req, res) => {

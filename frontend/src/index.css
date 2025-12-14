@@ -1,255 +1,405 @@
-/*body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* =========================================
+   1. VARIABLES Y CONFIGURACIÓN GLOBAL
+   ========================================= */
+:root {
+  --brand-red: #ee251a;      
+  --brand-yellow: #eee21a;   
+  --dark-bg: #0a0a0a;        /* Negro casi absoluto */
+  --card-bg: rgba(20, 20, 20, 0.6); /* Cristal oscuro */
+  --text-white: #ffffff;
+  --text-gray: #a1a1aa;
+  --radius: 16px;
+  --transition: all 0.3s ease;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-white);
+  background-color: var(--dark-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-*/
- @import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;600;700&display=swap');
 
- * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
- }
-
- body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
- }
-
- a {
-  text-decoration: none;
-  color: #000;
- }
-
- p {
-  line-height: 1.7;
- }
-
- ul {
-  list-style: none;
- }
-
- li {
-  line-height: 2.2;
- }
-
- h1,
- h2,
- h3{
-  font-weight: 600;
-  margin-bottom: 10px;
- }
-
- .container {
+/* =========================================
+   2. ESTILOS DE AUTENTICACIÓN (Login/Registro)
+   ========================================= */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   width: 100%;
-  max-width: 960px;
+  padding: 20px;
+  position: relative;
+  background-color: var(--dark-bg);
+  z-index: 1;
+}
+
+/* ORBES FLOTANTES */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  width: 300px;
+  height: 300px;
+  background: var(--brand-red);
+  filter: blur(120px);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: floatRed 8s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  right: 20%;
+  width: 250px;
+  height: 250px;
+  background: var(--brand-yellow);
+  filter: blur(100px);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: floatYellow 10s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+@keyframes floatRed {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-50px, 50px) scale(1.1); }
+}
+
+@keyframes floatYellow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, -40px) scale(1.2); }
+}
+
+/* TARJETA DE CRISTAL */
+.auth-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius);
+  padding: 3rem;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TEXTOS Y ICONOS AUTH */
+.auth-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--brand-red);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.auth-title::after {
+  content: '.';
+  color: var(--brand-yellow);
+}
+
+.auth-subtitle {
+  color: var(--text-gray);
+  margin-bottom: 2.5rem;
+  font-size: 0.95rem;
+}
+
+/* INPUTS Y FORMULARIOS (Común para Auth y Dashboard) */
+.form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #d4d4d8;
+  margin-left: 2px;
+}
+
+.form-input, .form-control {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: rgba(0, 0, 0, 0.3); /* Unificado oscuro */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: white;
+  transition: var(--transition);
+  outline: none;
+  font-family: inherit;
+}
+
+/* Ajuste específico para iconos en Auth */
+.form-input {
+  padding-left: 44px; /* Espacio para icono */
+  padding-right: 45px; /* Espacio para ojo */
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+  font-size: 1.1rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  font-size: 1.1rem;
+  z-index: 20;
+}
+
+.form-input:focus, .form-control:focus {
+  border-color: var(--brand-red);
+  background-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 4px rgba(238, 37, 26, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* BOTONES GENERALES */
+.btn, .btn-block {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--brand-red);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition);
+  margin-top: 1rem;
+}
+
+.btn:hover, .btn-block:hover {
+  background-color: #c91f16;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(238, 37, 26, 0.4);
+}
+
+/* Footer Auth */
+.auth-footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-gray);
+}
+.auth-footer a {
+  color: var(--brand-yellow);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* =========================================
+   3. ESTILOS DEL DASHBOARD Y HEADER
+   ========================================= */
+
+.Container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  text-align: center;
- }
+}
 
- .header{
+/* Header */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
-  border-bottom: 1px solid #e6e6e6;
-  margin-bottom: 60px;
- }
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 40px;
+}
 
- .header ul{
+.header ul {
   display: flex;
   align-items: center;
-  justify-content: space-between;
- }
+  gap: 20px;
+  list-style: none;
+}
 
- .header ul li{
-  margin-left: 20px;
- }
-
- .header ul li a{
+.header a {
+  color: var(--text-white);
+  text-decoration: none;
+  font-weight: 500;
   display: flex;
   align-items: center;
- }
+  gap: 8px;
+  transition: var(--transition);
+}
 
- .header ul li a:hover{
-  color: #777;
- }
+.header a:hover {
+  color: var(--brand-yellow);
+}
 
- .header ul li a svg {
-  margin-right: 5px;
- }
+/* --- SOLUCIÓN BOTÓN HEADER (Transparente y Elegante) --- */
+.header .btn {
+  background-color: transparent !important; /* Forzamos transparencia */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-gray);
+  padding: 8px 16px;
+  width: auto; /* Que no ocupe todo el ancho */
+  margin-top: 0;
+  font-size: 0.9rem;
+}
 
- .heading{
+.header .btn:hover {
+  background-color: rgba(238, 37, 26, 0.15) !important;
+  border-color: var(--brand-red);
+  color: white;
+  box-shadow: 0 0 15px rgba(238, 37, 26, 0.4);
+  transform: translateY(0);
+}
+
+/* Títulos */
+.heading {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 50px;
-  padding: 0 20px;
- }
-
- .heading p{
-  color: #828282;
- }
-
- .goals{
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
- }
-
- .goals{
-  background-color: #f4f4f4;
-  margin: 10px 0;
-  padding: 20px 0 10px;
-  position: relative;
- }
-
- .goal .close{
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  cursor: pointer;
-  border: none;
-  background: none;
- }
-
- .form,
- .content{
-  width: 70%;
-  margin: 0 auto;
- }
-
- .form-group{
-  margin-bottom: 10px;
- }
-
- .form-group input,
- .form-group textarea,
- .form-group select{
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #e6e6e6;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  font-family: inherit;
- }
-
- .form-group label{
-  text-align: left;
-  display: block;
-  margin: 0 0 5px 3px;
- }
-
- .btn{
-  padding: 10px 20px;
-  border: 1px solid #000;
-  border-radius: 5px;
-  background: #000;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
+  margin-bottom: 2rem;
   text-align: center;
-  appearance: button;
-  display: flex;
-  align-items: center;
-  justify-content: center;
- }
+}
+.heading p {
+  color: var(--text-gray);
+  font-size: 1.2rem;
+}
 
- .btn svg{
-  margin-right: 8px;
- }
+/* Formulario Dashboard */
+.form {
+  width: 70%;
+  margin: 0 auto 3rem auto;
+}
 
- .btn-reverse{
-  background-color: #fff;
-  color: #000;
- }
+/* =========================================
+   4. GRILLA Y TARJETAS (Dashboard)
+   ========================================= */
 
- .btn-block{
+/* CONTENEDOR DE LA GRILLA */
+.content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Columnas */
+  gap: 25px;
   width: 100%;
-  margin-bottom: 20px;
- }
+  padding-bottom: 50px;
+}
 
- .btn:hover{
-  transform: scale(0.98);
- }
+/* Responsivo */
+@media (max-width: 900px) {
+  .content { grid-template-columns: repeat(2, 1fr); }
+  .form { width: 90%; }
+}
 
- .loadingSpinnerContainer{
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 5);
-  z-index: 5000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
- }
+@media (max-width: 600px) {
+  .content { grid-template-columns: 1fr; }
+  .header { flex-direction: column; gap: 15px; }
+}
 
- .loadingSpinner{
-  width: 64px;
-  height: 64px;
-  border: 8px solid;
-  border-color: #000 transparent #555 transparent;
-  border-radius: 50%;
-  animation: spin 1.2px linear infinite;
- }
-
- .herramienta {
-  background-color: #f4f4f4;
-  margin: 10px 0;
+/* TARJETA INDIVIDUAL */
+.herramienta, .goal {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
   padding: 20px;
   position: relative;
-  border-radius: 5px;
+  overflow: hidden;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  display: flex;           /* Para asegurar contenido vertical */
+  flex-direction: column; 
+  justify-content: space-between;
 }
 
-.herramienta .close {
+.herramienta:hover {
+  transform: translateY(-5px);
+  border-color: var(--brand-red);
+}
+
+.herramienta h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--brand-yellow);
+}
+
+.herramienta div {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  margin-top: 5px;
+}
+
+.precio-tag {
+  background: rgba(238, 37, 26, 0.2);
+  color: var(--brand-red);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 10px;
+  align-self: flex-start; /* Alineado a la izquierda */
+}
+
+/* Botones de acción en tarjetas */
+.close, .edit-icon {
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 15px;
   cursor: pointer;
   border: none;
   background: none;
-  color: red;
+  font-size: 1.2rem;
+  color: var(--text-gray);
+  transition: 0.3s;
 }
+.close:hover { color: var(--brand-red); transform: scale(1.2); }
 
-.herramientas {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Dos columnas */
-  gap: 10px;
-}
-
- @keyframes spin{
-  0%{
-    transform: rotate(0deg);
-  }
-
-  100%{
-    transform: rotate(360deg);
-  }
- }
-
- @media (max-width: 600px){
-  .form{
-    width: 90%;
-  }
-
-  .heading h1{
-    font-size: 2rem;
-  }
-
-  .heading p{
-    font-size: 1.5rem;
-  }
- }
+.edit-icon { right: 50px; }
+.edit-icon:hover { color: var(--brand-yellow); }
