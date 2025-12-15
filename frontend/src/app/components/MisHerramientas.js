@@ -21,8 +21,6 @@ function MisHerramientas() {
     if (!user) {
       navigate('/login');
     } else {
-      // Obtenemos todas y filtramos en el renderizado
-      // (Idealmente el backend tendría un endpoint /mis-herramientas, pero esto funciona)
       dispatch(obtenerHerramientas());
     }
 
@@ -31,11 +29,11 @@ function MisHerramientas() {
     };
   }, [user, navigate, isError, message, dispatch]);
 
-  // Filtramos: Solo las herramientas donde el ID del dueño coincide con el ID del usuario actual
-  // Nota: Dependiendo de tu backend, 'h.user' puede ser un ID (string) o un objeto. 
-  // Usamos h.user._id || h.user para cubrir ambos casos.
+  // ✅ CORRECCIÓN DE SEGURIDAD AQUÍ:
+  // Usamos el operador '?.' (optional chaining)
+  // Si h.user es null, 'toolUserId' será undefined y no romperá la página.
   const misTools = herramientas.filter(h => {
-      const toolUserId = h.user._id || h.user; 
+      const toolUserId = h.user?._id || h.user; 
       return toolUserId === user?._id;
   });
 
@@ -46,14 +44,14 @@ function MisHerramientas() {
         <section className="container">
             <div className="dashboard-heading">
                 <h1 className="dashboard-title">
-                    Mis Herramientas <span style={{color: '#fca311'}}>.</span>
+                    Mis Equipos <span style={{color: '#fca311'}}>.</span>
                 </h1>
                 <p className="dashboard-subtitle">
                     Gestiona tu inventario
                 </p>
             </div>
 
-            {/* ✅ NUEVO BOTÓN DE PUBLICAR */}
+            {/* BOTÓN DE PUBLICAR */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
                 <button 
                     className='btn' 
@@ -70,7 +68,6 @@ function MisHerramientas() {
                         <HerramientaItem 
                             key={herramienta._id} 
                             herramienta={herramienta} 
-                            // Aquí podrías pasarle funciones para editar si quieres
                         />
                     ))}
                 </div>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // ✅ Importamos useState
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import HerramientaItem from './HerramientaItem';
@@ -15,6 +15,9 @@ function Dashboard() {
     (state) => state.herramientas
   );
 
+  // ✅ ESTADO PARA EL BUSCADOR
+  const [busqueda, setBusqueda] = useState('');
+
   useEffect(() => {
     if (isError) console.log(message);
 
@@ -29,10 +32,18 @@ function Dashboard() {
     };
   }, [user, navigate, isError, message, dispatch]);
 
-  // ✅ FILTRO: Mostrar solo herramientas que NO son mías
+  // ✅ FILTRO MEJORADO: Propiedad ajena + Coincidencia de búsqueda
   const catalogoDisponible = herramientas.filter(h => {
-      const ownerId = h.user._id || h.user; // Manejo por si viene populado o solo ID
-      return ownerId !== user?._id;
+      // 1. Verificamos dueño (Safety check con ?.)
+      const ownerId = h.user?._id || h.user; 
+      const esAjeno = ownerId !== user?._id;
+
+      // 2. Verificamos texto de búsqueda (Nombre o Marca)
+      const textoBusqueda = busqueda.toLowerCase();
+      const coincideNombre = h.nombre?.toLowerCase().includes(textoBusqueda);
+      const coincideMarca = h.marca?.toLowerCase().includes(textoBusqueda);
+
+      return esAjeno && (coincideNombre || coincideMarca);
   });
 
   if (isLoading) return <Spinner />;
@@ -50,7 +61,18 @@ function Dashboard() {
             </p>
         </div>
 
-        {/* YA NO ESTÁ EL FORMULARIO AQUÍ */}
+        {/* ✅ BARRA DE BÚSQUEDA */}
+        <div style={{ maxWidth: '500px', margin: '0 auto 30px auto', position: 'relative' }}>
+            <FaSearch style={{ position: 'absolute', top: '15px', left: '15px', color: '#666' }} />
+            <input 
+                type="text"
+                placeholder="Buscar por nombre o marca (ej. Taladro, Bosch)..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="form-control"
+                style={{ paddingLeft: '40px' }} // Espacio para el icono
+            />
+        </div>
 
         {catalogoDisponible.length > 0 ? (
             <div className="herramientas-grid">
@@ -58,15 +80,23 @@ function Dashboard() {
                     <HerramientaItem 
                         key={herramienta._id} 
                         herramienta={herramienta}
-                        // activarEdicion={activarEdicion} // Ya no editamos desde el catálogo público
                     />
                 ))}
             </div>
         ) : (
             <div style={{textAlign: 'center', marginTop: '50px', color: '#a1a1aa'}}>
                 <FaSearch size={50} style={{marginBottom: '20px', opacity: 0.5}}/>
-                <h3>No hay herramientas disponibles para rentar.</h3>
-                <p>Sé el primero en publicar una.</p>
+                {busqueda ? (
+                    <>
+                        <h3>No se encontraron resultados para "{busqueda}"</h3>
+                        <p>Intenta con otra palabra clave.</p>
+                    </>
+                ) : (
+                    <>
+                        <h3>No hay herramientas disponibles para rentar.</h3>
+                        <p>Sé el primero en publicar una.</p>
+                    </>
+                )}
             </div>
         )}
       </section>

@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import rentaService from './rentaService';
 
 const initialState = {
-  rentas: [],
+  rentas: [],       // Lo que yo renté
+  clientes: [],     // ✅ NUEVO: Gente que me rentó a mí
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -60,6 +61,20 @@ export const cancelarRenta = createAsyncThunk(
   }
 );
 
+// ✅ NUEVO THUNK: Obtener Clientes
+export const obtenerClientes = createAsyncThunk(
+  'rentas/obtenerClientes',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await rentaService.obtenerClientes(token);
+    } catch (error) {
+      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const rentaSlice = createSlice({
   name: 'renta',
   initialState,
@@ -110,6 +125,19 @@ export const rentaSlice = createSlice({
         state.rentas = state.rentas.filter((renta) => renta._id !== action.payload.id);
       })
       .addCase(cancelarRenta.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(obtenerClientes.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(obtenerClientes.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.clientes = action.payload; // Guardamos en el array 'clientes'
+      })
+      .addCase(obtenerClientes.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

@@ -40,10 +40,19 @@ const cancelarRenta = async (rentaId, token) => {
   return response.data;
 };
 
+const obtenerClientes = async (token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  const response = await axios.get(API_URL + 'mis-clientes', config);
+  return response.data;
+};
+
 const rentaService = {
   crearRenta,
   obtenerMisRentas,
-  cancelarRenta, // ⬅️ No olvides exportarla aquí
+  cancelarRenta,
+  obtenerClientes, // ✅ Exportar
 };
 
 export default rentaService;

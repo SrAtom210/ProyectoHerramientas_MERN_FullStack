@@ -12,6 +12,8 @@ import MisHerramientas from './app/components/MisHerramientas';
 import Perfil from './app/components/Perfil';
 import CrearHerramienta from './app/components/CrearHerramienta';
 import EditarHerramienta from './app/components/EditarHerramienta';
+import MisClientes from './app/components/MisClientes'; // ✅ Importar
+import HerramientaDetalles from './app/components/HerramientaDetalles'; // ✅ IMPORTAR
 
 function App() {
   return (
@@ -28,7 +30,9 @@ function App() {
             <Route path='/mi-perfil' element={<Perfil />} />
             <Route path='/crear-herramienta' element={<CrearHerramienta />} />
             <Route path='/editar-herramienta/:id' element={<EditarHerramienta />} />
-            
+            <Route path='/mis-rentas' element={<MisRentas />} />
+            <Route path='/clientes' element={<MisClientes />} />
+            <Route path='/herramienta/:id' element={<HerramientaDetalles />} />
           </Routes>
         </div>
       </Router>

@@ -1,141 +1,168 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaHammer, FaCalendarAlt, FaMoneyBillWave, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import { crearRenta, reset as resetRenta } from '../features/rentaSlice';
+import { obtenerHerramientas } from '../features/herramientasSlice';
 import Spinner from './Spinner';
-import { obtenerUnaHerramienta, reset } from '../features/herramientasSlice';
-import { crearRenta } from '../features/rentaSlice';
+// ✅ Mantenemos los imports, ahora sí los usaremos todos
+import { FaArrowLeft, FaCalendarAlt, FaMoneyBillWave, FaCheckCircle } from 'react-icons/fa';
 
 function HerramientaDetalles() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { herramientaActiva, isLoading, isError, message } = useSelector(
-    (state) => state.herramientas
-  );
+  const { herramientas, isLoading: loadingTools } = useSelector((state) => state.herramientas);
+  const { isSuccess, isError, message, isLoading: loadingRenta } = useSelector((state) => state.rentas);
+  const { user } = useSelector((state) => state.auth);
 
-  const [fechas, setFechas] = useState({ fechaInicio: '', fechaFin: '' });
-  const [total, setTotal] = useState(0);
-  const [dias, setDias] = useState(0);
+  const [dias, setDias] = useState(1);
+  const [fechaInicio, setFechaInicio] = useState(new Date().toISOString().split('T')[0]);
 
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-    dispatch(obtenerUnaHerramienta(id));
-    return () => {
-      dispatch(reset());
-    };
-  }, [isError, message, dispatch, id]);
+  const herramienta = herramientas.find((h) => h._id === id);
 
   useEffect(() => {
-    if (herramientaActiva && fechas.fechaInicio && fechas.fechaFin) {
-      const inicio = new Date(fechas.fechaInicio);
-      const fin = new Date(fechas.fechaFin);
-
-      if (fin < inicio) {
-        setDias(0); setTotal(0);
-        return;
-      }
-      const diffTime = Math.abs(fin - inicio);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      
-      if(diffDays > 0) {
-        setDias(diffDays);
-        setTotal(diffDays * herramientaActiva.precio);
-      } else {
-        setDias(0); setTotal(0);
-      }
+    if (!herramienta && !loadingTools) {
+        dispatch(obtenerHerramientas());
     }
-  }, [fechas, herramientaActiva]);
 
-  const onChange = (e) => {
-    setFechas((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    if (total <= 0) {
-      toast.error('Selecciona fechas válidas');
-      return;
-    }
-    const rentData = {
-      herramientaId: id,
-      fechaInicio: fechas.fechaInicio,
-      fechaFin: fechas.fechaFin,
-      costoCalculado: total
-    };
-    dispatch(crearRenta(rentData))
-      .unwrap()
-      .then(() => {
-        toast.success(`¡Renta exitosa por $${total}!`);
+    if (isSuccess) {
+        alert('¡Renta realizada con éxito!');
+        dispatch(resetRenta());
         navigate('/mis-rentas');
-      })
-      .catch((error) => toast.error(error));
+    }
+
+    if (isError) {
+        alert(message);
+        dispatch(resetRenta());
+    }
+  }, [herramienta, isSuccess, isError, message, navigate, dispatch, loadingTools]);
+
+  const onRentar = () => {
+      if (!user) {
+          navigate('/login');
+          return;
+      }
+
+      const precioTotal = herramienta.precio * dias;
+      
+      const fechaFinObj = new Date(fechaInicio);
+      fechaFinObj.setDate(fechaFinObj.getDate() + parseInt(dias));
+      
+      const rentaData = {
+          herramientaId: herramienta._id,
+          fechaInicio: fechaInicio,
+          fechaFin: fechaFinObj.toISOString(),
+          precioTotal: precioTotal,
+          dias: dias
+      };
+
+      dispatch(crearRenta(rentaData));
   };
 
-  if (isLoading) return <Spinner />;
-  if (!herramientaActiva) return <div className='container' style={{color:'white', marginTop:'50px', textAlign:'center'}}>Cargando...</div>;
+  if (loadingTools || !herramienta) return <Spinner />;
 
-  // CORRECCIÓN: Usamos 'foto' aquí
-  const imagenMostrar = herramientaActiva.foto && herramientaActiva.foto !== 'https://via.placeholder.com/150' 
-    ? herramientaActiva.foto 
-    : null;
+  const precioTotal = herramienta.precio * dias;
+
+  let src = herramienta.imagen;
+  if (src && !src.startsWith('http')) {
+      src = src.replace(/\\/g, '/');
+      src = `http://penrose512.jcarlos19.com:8000/${src}`;
+  }
 
   return (
     <div className="dashboard-container">
-      <div className="Container">
-        <button className="btn" style={{width: 'auto', marginBottom: '20px', background: 'transparent', border: '1px solid #333'}} onClick={() => navigate('/')}>
-          <FaArrowLeft /> Regresar
-        </button>
+        <div className="container" style={{ maxWidth: '900px' }}>
+            <button className='btn-ghost' onClick={() => navigate('/')} style={{ marginBottom: '20px' }}>
+                <FaArrowLeft /> Volver al Catálogo
+            </button>
 
-        <div className="detail-layout">
-          <div className="detail-visual">
-            {imagenMostrar ? (
-                <img src={imagenMostrar} alt={herramientaActiva.nombre} className="detail-image" />
-            ) : (
-                <div style={{display:'flex', justifyContent:'center', alignItems:'center', height:'300px', background:'rgba(255,255,255,0.05)', borderRadius:'16px'}}>
-                    <FaHammer size={100} color="rgba(255,255,255,0.2)" />
+            <div className="detail-layout" style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr 1fr', 
+                gap: '40px',
+                background: 'rgba(20, 20, 20, 0.8)',
+                padding: '40px',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+                {/* COLUMNA IZQUIERDA: FOTO */}
+                <div style={{ textAlign: 'center' }}>
+                    <img 
+                        src={src} 
+                        alt={herramienta.nombre} 
+                        style={{ width: '100%', borderRadius: '15px', border: '1px solid #333', maxHeight: '400px', objectFit: 'cover' }} 
+                    />
                 </div>
-            )}
-            <div className="visual-badges">
-                <span className="badge-tech" style={{marginRight:'10px', padding:'5px 10px', background:'#333', borderRadius:'20px', fontSize:'0.8rem'}}>{herramientaActiva.marca}</span>
-                <span className="badge-status available" style={{color:'#4ade80'}}><FaCheckCircle/> {herramientaActiva.estado}</span>
+
+                {/* COLUMNA DERECHA: INFO Y PAGO */}
+                <div style={{ color: 'white' }}>
+                    <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{herramienta.nombre}</h1>
+                    <p style={{ color: '#a1a1aa', marginBottom: '20px', fontSize: '1.1rem' }}>
+                        {herramienta.descripcion || 'Sin descripción disponible.'}
+                    </p>
+                    
+                    <div style={{ marginBottom: '30px', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+                        <p style={{ margin: 0, color: '#fca311', fontWeight: 'bold' }}>Marca: {herramienta.marca}</p>
+                        <p style={{ margin: '5px 0 0 0', color: '#ccc' }}>Publicado por: {herramienta.user?.nombre || 'Anónimo'}</p>
+                    </div>
+
+                    {/* FORMULARIO DE RENTA */}
+                    <div className="rent-calculator" style={{ background: '#000', padding: '20px', borderRadius: '15px', border: '1px solid #333' }}>
+                        <h3 style={{ borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>
+                            Configurar Renta
+                        </h3>
+
+                        <div style={{ marginBottom: '15px' }}>
+                            {/* ✅ USO 1: Icono de Calendario en el label */}
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px', color: '#aaa' }}>
+                                <FaCalendarAlt /> Fecha de Inicio
+                            </label>
+                            <input 
+                                type="date" 
+                                className="form-control" 
+                                value={fechaInicio}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setFechaInicio(e.target.value)}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px', color: '#aaa' }}>Días de renta</label>
+                            <select 
+                                className="form-control" 
+                                value={dias} 
+                                onChange={(e) => setDias(Number(e.target.value))}
+                            >
+                                {[1,2,3,4,5,7,14,30].map(d => (
+                                    <option key={d} value={d}>{d} día{d > 1 ? 's' : ''}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* RESUMEN DE COSTO */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', fontSize: '1.2rem' }}>
+                            {/* ✅ USO 2: Icono de Billete en el total */}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <FaMoneyBillWave color="#34d399"/> Total a Pagar:
+                            </span>
+                            <span style={{ color: '#fca311', fontWeight: 'bold', fontSize: '1.5rem' }}>
+                                ${precioTotal}
+                            </span>
+                        </div>
+
+                        <button 
+                            className="btn btn-block" 
+                            onClick={onRentar}
+                            disabled={loadingRenta}
+                            style={{ background: '#fca311', color: '#000', fontWeight: 'bold' }}
+                        >
+                            {loadingRenta ? 'Procesando...' : <><FaCheckCircle /> Confirmar Renta</>}
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <div className="detail-panel">
-            <h1 className="detail-title" style={{fontSize:'2.5rem'}}>{herramientaActiva.nombre}</h1>
-            <div className="detail-price">
-                <span style={{color:'var(--brand-yellow)', fontSize:'1.5rem'}}>${herramientaActiva.precio}</span> <small>/día</small>
-            </div>
-            <p className="detail-desc" style={{margin:'20px 0', color:'#ccc'}}>{herramientaActiva.descripcion}</p>
-
-            <form onSubmit={onSubmit} className="rent-calculator" style={{background:'rgba(255,255,255,0.05)', padding:'20px', borderRadius:'16px'}}>
-                <h3 className="calc-title" style={{marginBottom:'15px'}}><FaCalendarAlt /> Configurar Renta</h3>
-                <div className="date-grid" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'20px'}}>
-                    <div className="form-group">
-                        <label>Desde</label>
-                        <input type="date" name="fechaInicio" className="form-control" onChange={onChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Hasta</label>
-                        <input type="date" name="fechaFin" className="form-control" onChange={onChange} required />
-                    </div>
-                </div>
-                <div className="cost-summary" style={{borderTop:'1px solid #333', paddingTop:'15px', marginBottom:'20px'}}>
-                    <div style={{display:'flex', justifyContent:'space-between'}}>
-                        <span>Total estimado:</span>
-                        <span className="neon-text" style={{color:'var(--brand-red)', fontWeight:'bold'}}>${total} MXN</span>
-                    </div>
-                </div>
-                <button type="submit" className="btn btn-block">Confirmar Renta <FaMoneyBillWave /></button>
-            </form>
-          </div>
         </div>
-      </div>
     </div>
   );
 }

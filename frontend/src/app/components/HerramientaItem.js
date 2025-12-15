@@ -8,12 +8,13 @@ function HerramientaItem({ herramienta }) {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  // Verificamos si el usuario actual es el dueño de esta herramienta
-  // Manejamos el caso donde herramienta.user sea un objeto o un ID string
-  const esMio = user && (
-      (herramienta.user._id && herramienta.user._id === user._id) || 
-      (herramienta.user === user._id)
-  );
+  // ✅ CORRECCIÓN DE SEGURIDAD (Defensive Coding)
+  // 1. Intentamos obtener el ID del dueño de forma segura con '?.'
+  // Si herramienta.user es null, esto devolverá undefined en lugar de romper la app.
+  const herramientaUserId = herramienta.user?._id || herramienta.user;
+
+  // 2. Comparamos solo si tenemos ambos datos
+  const esMio = user && herramientaUserId === user._id;
 
   const irADetalles = () => {
     navigate(`/herramienta/${herramienta._id}`);
@@ -29,7 +30,6 @@ function HerramientaItem({ herramienta }) {
     }
   };
 
-  // Lógica de imagen (Igual que tenías)
   const renderImagen = () => {
     if (!herramienta.imagen) {
         return (
@@ -57,10 +57,11 @@ function HerramientaItem({ herramienta }) {
       <h2>{herramienta.nombre}</h2>
       <p className="card-brand">Marca: {herramienta.marca}</p>
 
-      {/* Solo mostramos el dueño si NO es mío (en el catálogo) */}
-      {!esMio && herramienta.user && (
+      {/* ✅ CORRECCIÓN VISUAL:
+          Usamos '?.' para acceder al nombre. Si no tiene usuario, mostramos "Usuario desconocido" */}
+      {!esMio && (
          <p className="card-user">
-             Publicado por: {herramienta.user.nombre || 'Usuario'}
+             Publicado por: {herramienta.user?.nombre || 'Usuario desconocido'}
          </p>
       )}
 
@@ -68,7 +69,7 @@ function HerramientaItem({ herramienta }) {
 
       <div className="card-actions">
         {esMio ? (
-            // === OPCIONES DE DUEÑO (Editar / Borrar) ===
+            // === OPCIONES DE DUEÑO ===
             <>
                 <button 
                     className='btn' 
@@ -89,7 +90,7 @@ function HerramientaItem({ herramienta }) {
                 </button>
             </>
         ) : (
-            // === OPCIONES DE CLIENTE (Rentar) ===
+            // === OPCIONES DE CLIENTE ===
             <button className='btn' onClick={irADetalles} style={{flex: 1}}>
                 <FaShoppingCart /> Rentar
             </button>

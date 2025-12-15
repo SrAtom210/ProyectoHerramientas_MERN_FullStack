@@ -68,8 +68,27 @@ const cancelarRenta = asyncHandler(async (req, res) => {
     res.status(200).json({ id: req.params.id });
 });
 
+// @desc    Obtener rentas de MIS herramientas (Gente que me rentó a mí)
+// @route   GET /api/rentas/mis-clientes
+// @access  Privado
+const obtenerClientes = asyncHandler(async (req, res) => {
+    // 1. Primero encontramos TODAS las herramientas que me pertenecen
+    const misHerramientas = await Herramienta.find({ user: req.usuario.id });
+    
+    // 2. Extraemos solo los IDs de mis herramientas
+    const misHerramientasIds = misHerramientas.map(h => h._id);
+
+    // 3. Buscamos en la colección de Rentas aquellas donde la herramienta coincida con mis IDs
+    const clientes = await Renta.find({ herramienta: { $in: misHerramientasIds } })
+                              .populate('user', 'nombre email') // Traemos datos del CLIENTE (quien rentó)
+                              .populate('herramienta');         // Traemos datos de la HERRAMIENTA
+
+    res.status(200).json(clientes);
+});
+
 module.exports = {
     crearRenta,
     obtenerMisRentas,
-    cancelarRenta // ✅ No olvides exportar la nueva función
+    cancelarRenta,
+    obtenerClientes // <--- ¡No olvides exportarla!
 };
