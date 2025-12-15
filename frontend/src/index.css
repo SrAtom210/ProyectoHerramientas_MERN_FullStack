@@ -395,3 +395,116 @@ textarea.form-control {
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* ======================================================
+   PEGAR ESTO AL FINAL DE TU INDEX.CSS ACTUAL
+   ====================================================== */
+
+/* --- 1. MEJORA DE INPUTS (Campos de texto) --- */
+.form-input {
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo más oscuro para contraste */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Borde sutil */
+  border-radius: 12px; /* Bordes más redondeados */
+  color: #fff;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  /* Aseguramos espacio para el icono a la izquierda */
+  padding-left: 45px !important; 
+}
+
+/* Efecto al hacer clic en el input */
+.form-input:focus {
+  border-color: #eee21a; /* Amarillo al enfocar */
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 0 4px rgba(238, 226, 26, 0.15); /* Resplandor amarillo suave */
+  outline: none;
+}
+
+/* Asegurar que los iconos dentro del input se vean bien */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  color: #888;
+  pointer-events: none; /* Para poder dar clic a través del icono */
+  transition: color 0.3s;
+  z-index: 10;
+}
+
+/* Cuando el input tiene foco, el icono también se ilumina */
+.input-wrapper:focus-within .input-icon {
+  color: #eee21a;
+}
+
+/* Botón del ojo (ver contraseña) */
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+.password-toggle:hover {
+  color: #eee21a;
+}
+
+
+/* --- 2. ANIMACIÓN DE FONDO (Solo Login y Registro) --- */
+
+.auth-container {
+  position: relative;
+  overflow: hidden; /* Importante para que las luces no rompan la página */
+  z-index: 1;
+}
+
+/* Luz Roja (#ee251a) */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  width: 350px;
+  height: 350px;
+  background: #ee251a;
+  border-radius: 50%;
+  filter: blur(120px); /* Difuminado fuerte */
+  opacity: 0.4;
+  z-index: -1;
+  animation: floatRed 8s ease-in-out infinite alternate;
+}
+
+/* Luz Amarilla (#eee21a) */
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  right: 20%;
+  width: 300px;
+  height: 300px;
+  background: #eee21a;
+  border-radius: 50%;
+  filter: blur(100px); /* Difuminado fuerte */
+  opacity: 0.3;
+  z-index: -1;
+  animation: floatYellow 10s ease-in-out infinite alternate;
+}
+
+/* Animaciones de movimiento */
+@keyframes floatRed {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-40px, 40px) scale(1.1); }
+}
+
+@keyframes floatYellow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, -40px) scale(1.1); }
+}

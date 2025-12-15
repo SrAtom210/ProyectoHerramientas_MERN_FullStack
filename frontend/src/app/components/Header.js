@@ -24,6 +24,10 @@ function Header() {
     navigate('/login');
   };
 
+  if (!user) {
+    return null; 
+  }
+
   return (
     <header className='header'>
       <div className="logo">

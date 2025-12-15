@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// 1. Importamos los iconos del ojo
 import { FaUserPlus, FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
-//import { registro, reset } from '../features/authSlice';
 import { registro, reset } from '../features/authSlice';
 import Spinner from './Spinner';
 
@@ -16,7 +14,6 @@ function Register() {
     password2: '',
   });
 
-  // 2. Estados para controlar la visibilidad de AMBOS campos
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -55,61 +52,62 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="auth-icon">
-          <FaUserPlus />
+        
+        <div className="auth-header">
+            <div className="auth-icon-circle">
+                <FaUserPlus />
+            </div>
+            <h1 className="auth-title">Crear Cuenta</h1>
+            <p className="auth-subtitle">Únete para empezar a rentar equipo</p>
         </div>
-        <h1 className="auth-title">Crear Cuenta</h1>
-        <p className="auth-subtitle">Únete para empezar a rentar equipo</p>
 
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="nombre" className="form-label">Nombre Completo</label>
             <div className="input-wrapper">
+              <FaUser className="input-icon left" />
               <input
                 type="text"
-                className="form-input"
+                className="form-input with-icon"
                 name="nombre"
                 value={nombre}
-                placeholder="Tu nombre"
+                placeholder="Tu nombre completo"
                 onChange={onChange}
                 required
               />
-              <FaUser className="input-icon" size={16} />
             </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="email" className="form-label">Correo Electrónico</label>
             <div className="input-wrapper">
+              <FaEnvelope className="input-icon left" />
               <input
                 type="email"
-                className="form-input"
+                className="form-input with-icon"
                 name="email"
                 value={email}
                 placeholder="usuario@ejemplo.com"
                 onChange={onChange}
                 required
               />
-              <FaEnvelope className="input-icon" size={16} />
             </div>
           </div>
 
-          {/* CAMPO DE CONTRASEÑA */}
+          {/* PASSWORD */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">Contraseña</label>
             <div className="input-wrapper">
+              <FaLock className="input-icon left" />
               <input
                 type={showPassword ? "text" : "password"}
-                className="form-input"
+                className="form-input with-icon with-toggle"
                 name="password"
                 value={password}
                 placeholder="••••••••"
                 onChange={onChange}
                 required
               />
-              <FaLock className="input-icon" size={16} />
-              
-              {/* Botón Toggle */}
               <button 
                 type="button" 
                 className="password-toggle"
@@ -120,22 +118,20 @@ function Register() {
             </div>
           </div>
 
-          {/* CAMPO DE CONFIRMAR CONTRASEÑA */}
+          {/* CONFIRM PASSWORD */}
           <div className="form-group">
             <label htmlFor="password2" className="form-label">Confirmar Contraseña</label>
             <div className="input-wrapper">
+              <FaLock className="input-icon left" />
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                className="form-input"
+                className="form-input with-icon with-toggle"
                 name="password2"
                 value={password2}
                 placeholder="••••••••"
                 onChange={onChange}
                 required
               />
-              <FaLock className="input-icon" size={16} />
-              
-              {/* Botón Toggle Independiente */}
               <button 
                 type="button" 
                 className="password-toggle"
@@ -146,7 +142,7 @@ function Register() {
             </div>
           </div>
 
-          <button type="submit" className="btn-block">
+          <button type="submit" className="btn-block btn-primary">
             Registrarme <FaUserPlus />
           </button>
         </form>

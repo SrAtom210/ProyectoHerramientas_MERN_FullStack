@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { FaSignInAlt, FaHammer, FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaSignInAlt, FaHammer, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-//import { login, reset } from '../features/authSlice';
 import { login, reset } from '../features/authSlice';
 import Spinner from './Spinner';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const { email, password } = formData;
+  // Estado local para ver contraseña (mejora de UX)
+  const [showPassword, setShowPassword] = useState(false);
 
+  const { email, password } = formData;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -42,21 +43,24 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        {/* Encabezado con Icono Gradiente */}
-        <div className="auth-icon">
-          <FaHammer />
-        </div>
         
-        <h1 className="auth-title">TaLadrando</h1>
-        <p className="auth-subtitle">¿Necesitas una herramienta? Estás en el lugar correcto.</p>
+        {/* Icono Principal con efecto de brillo */}
+        <div className="auth-header">
+            <div className="auth-icon-circle">
+                <FaHammer />
+            </div>
+            <h1 className="auth-title">TaLadrando</h1>
+            <p className="auth-subtitle">Acceso a herramientas profesionales</p>
+        </div>
 
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email" className="form-label">Correo Electrónico</label>
             <div className="input-wrapper">
+              <FaEnvelope className="input-icon left" />
               <input
                 type="email"
-                className="form-input"
+                className="form-input with-icon"
                 id="email"
                 name="email"
                 value={email}
@@ -64,16 +68,16 @@ function Login() {
                 onChange={onChange}
                 required
               />
-              <FaEnvelope className="input-icon" size={18} />
             </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="password" className="form-label">Contraseña</label>
             <div className="input-wrapper">
+              <FaLock className="input-icon left" />
               <input
-                type="password"
-                className="form-input"
+                type={showPassword ? "text" : "password"}
+                className="form-input with-icon with-toggle"
                 id="password"
                 name="password"
                 value={password}
@@ -81,17 +85,23 @@ function Login() {
                 onChange={onChange}
                 required
               />
-              <FaLock className="input-icon" size={18} />
+              <button 
+                type="button" 
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
           </div>
 
-          <button type="submit" className="btn-block">
+          <button type="submit" className="btn-block btn-primary">
             Ingresar <FaSignInAlt />
           </button>
         </form>
 
         <div className="auth-footer">
-          ¿Nuevo usuario? <Link to="/registro">Crear cuenta gratis</Link>
+          ¿Nuevo aquí? <Link to="/registro">Crear cuenta gratis</Link>
         </div>
       </div>
     </div>
