@@ -1,64 +1,81 @@
-import { useDispatch } from 'react-redux';
-//import { borrarHerramienta } from '../../features/herramientasSlice';
-//import { crearRenta } from '../../features/rentaSlice'; // 1. Importamos la acción de rentar
-import { borrarHerramienta } from '../features/herramientasSlice';
-import { crearRenta } from '../features/rentaSlice'; // 1. Importamos la acción de rentar
-import { FaEdit, FaTrash, FaShoppingCart } from 'react-icons/fa'; // Icono de carrito
-import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { borrarHerramienta } from '../features/herramientasSlice'; 
+import { FaTrash, FaShoppingCart, FaHammer } from 'react-icons/fa';
 
-function HerramientaItem({ herramienta, activarEdicion }) {
+function HerramientaItem({ herramienta }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
-  // Función para rentar
-  const onRentar = () => {
-    // Despachamos la acción enviando el ID de la herramienta
-    dispatch(crearRenta({ herramientaId: herramienta._id }));
-    toast.success(`¡Rentaste: ${herramienta.nombre}!`);
+  // 2. Navegar a detalles (Para elegir fechas antes de rentar)
+  const irADetalles = () => {
+    navigate(`/herramienta/${herramienta._id}`);
+  };
+
+  // 3. LÓGICA PARA MOSTRAR LA IMAGEN
+  const renderImagen = () => {
+    // Si no hay foto, mostramos el icono del martillo por defecto
+    if (!herramienta.imagen) {
+        return (
+            <div className="img-placeholder">
+                <FaHammer size={40} color="rgba(255,255,255,0.2)" />
+            </div>
+        );
+    }
+
+    let src = herramienta.imagen;
+
+    // Si NO empieza con http, asumimos que es una foto subida al servidor (Multer)
+    if (!src.startsWith('http')) {
+        // Corregimos las barras invertidas de Windows (\) por barras normales (/)
+        src = src.replace(/\\/g, '/');
+        // Construimos la URL completa apuntando a tu backend
+        // Asegúrate de que este puerto (8000) sea el correcto de tu backend
+        src = `http://penrose512.jcarlos19.com:8000/${src}`;
+    }
+
+    return <img src={src} alt={herramienta.nombre} className="card-img" />;
   };
 
   return (
     <div className='herramienta'>
-      {/* Fecha de creación */}
-      <div>{new Date(herramienta.createdAt).toLocaleString('es-MX')}</div>
-      
-      {/* Título y Marca */}
-      <h2>{herramienta.nombre}</h2>
-      <p style={{ color: '#a1a1aa', marginBottom: '10px' }}>Marca: {herramienta.marca}</p>
+      {/* Renderizamos la imagen primero */}
+      {renderImagen()}
 
-      {/* Precio estilizado */}
-      <div className='precio-tag'>
-        ${herramienta.precio} / día
+      <div className="card-date">
+         {new Date(herramienta.createdAt).toLocaleDateString('es-MX')}
       </div>
+      
+      <h2>{herramienta.nombre}</h2>
+      <p className="card-brand">Marca: {herramienta.marca}</p>
 
-      {/* Descripción (si existe) */}
-      <p style={{ fontStyle: 'italic', marginBottom: '20px' }}>
-         {herramienta.descripcion}
-      </p>
+      {/* Mostrar quién lo publicó (útil para el Marketplace) */}
+      {herramienta.user && (
+         <p className="card-user">
+             Publicado por: {herramienta.user.nombre}
+         </p>
+      )}
 
-      {/* BOTÓN DE RENTAR (Nuevo) */}
-      <button 
-        className='btn btn-block' 
-        onClick={onRentar}
-        style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-      >
-        <FaShoppingCart /> Rentar Ahora
-      </button>
+      <div className='precio-tag'>${herramienta.precio} / día</div>
 
-      {/* Botones de Admin (Editar/Borrar) */}
-      <button 
-        onClick={() => activarEdicion(herramienta)} 
-        className='edit-icon'
-        title="Editar"
-      >
-        <FaEdit />
-      </button>
-      <button 
-        onClick={() => dispatch(borrarHerramienta(herramienta._id))} 
-        className='close'
-        title="Borrar"
-      >
-        <FaTrash />
-      </button>
+      <div className="card-actions">
+        {/* El botón ahora lleva a detalles para configurar la renta */}
+        <button className='btn' onClick={irADetalles} style={{flex: 1}}>
+            <FaShoppingCart /> Rentar
+        </button>
+
+        {/* 4. Solo mostramos el botón de borrar si el usuario logueado es el dueño */}
+        {user && herramienta.user && user._id === herramienta.user._id && (
+            <button 
+                onClick={() => dispatch(borrarHerramienta(herramienta._id))} 
+                className='close'
+                title="Borrar mi herramienta"
+            >
+                <FaTrash />
+            </button>
+        )}
+      </div>
     </div>
   );
 }

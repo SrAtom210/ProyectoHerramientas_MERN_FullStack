@@ -25,6 +25,11 @@ const herramientaSchema = mongoose.Schema({
     descripcion: {
         type: String,
         default: ''
+    },
+    // ✅ CAMPO NUEVO: IMAGEN OBLIGATORIA
+    imagen: {
+        type: String,
+        required: [true, 'Por favor sube una imagen de la herramienta']
     }
 }, {
     timestamps: true // Crea campos createdAt y updatedAt automáticamente

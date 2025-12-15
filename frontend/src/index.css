@@ -5,16 +5,18 @@
    ========================================= */
 :root {
   --brand-red: #ee251a;      
-  --brand-yellow: #eee21a;   
-  --dark-bg: #0a0a0a;        /* Negro casi absoluto */
-  --card-bg: rgba(20, 20, 20, 0.6); /* Cristal oscuro */
+  --brand-yellow: #fca311;   
+  --dark-bg: #0a0a0a;
+  --card-bg: rgba(20, 20, 20, 0.7);
   --text-white: #ffffff;
   --text-gray: #a1a1aa;
-  --radius: 16px;
+  --radius: 12px;
   --transition: all 0.3s ease;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { width: 100%; }
 
 body {
   font-family: 'Inter', sans-serif;
@@ -22,243 +24,80 @@ body {
   background-color: var(--dark-bg);
   min-height: 100vh;
   overflow-x: hidden;
-  overflow-y: auto;
+  /* Fondo técnico sutil */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 /* =========================================
-   2. ESTILOS DE AUTENTICACIÓN (Login/Registro)
+   2. LAYOUT Y CONTENEDORES
    ========================================= */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  padding: 20px;
-  position: relative;
-  background-color: var(--dark-bg);
-  z-index: 1;
-}
-
-/* ORBES FLOTANTES */
-.auth-container::before {
-  content: '';
-  position: absolute;
-  top: 10%;
-  left: 20%;
-  width: 300px;
-  height: 300px;
-  background: var(--brand-red);
-  filter: blur(120px);
-  border-radius: 50%;
-  opacity: 0.5;
-  animation: floatRed 8s ease-in-out infinite alternate;
-  z-index: -1;
-}
-
-.auth-container::after {
-  content: '';
-  position: absolute;
-  bottom: 10%;
-  right: 20%;
-  width: 250px;
-  height: 250px;
-  background: var(--brand-yellow);
-  filter: blur(100px);
-  border-radius: 50%;
-  opacity: 0.4;
-  animation: floatYellow 10s ease-in-out infinite alternate;
-  z-index: -1;
-}
-
-@keyframes floatRed {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-50px, 50px) scale(1.1); }
-}
-
-@keyframes floatYellow {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, -40px) scale(1.2); }
-}
-
-/* TARJETA DE CRISTAL */
-.auth-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border-radius: var(--radius);
-  padding: 3rem;
-  width: 100%;
-  max-width: 450px;
-  text-align: center;
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* TEXTOS Y ICONOS AUTH */
-.auth-icon {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--brand-red);
-  border-radius: 16px;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-}
-
-.auth-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: white;
-  letter-spacing: -0.5px;
-}
-
-.auth-title::after {
-  content: '.';
-  color: var(--brand-yellow);
-}
-
-.auth-subtitle {
-  color: var(--text-gray);
-  margin-bottom: 2.5rem;
-  font-size: 0.95rem;
-}
-
-/* INPUTS Y FORMULARIOS (Común para Auth y Dashboard) */
-.form-group {
-  margin-bottom: 1.25rem;
-  text-align: left;
-  position: relative;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: #d4d4d8;
-  margin-left: 2px;
-}
-
-.form-input, .form-control {
-  width: 100%;
-  padding: 12px 16px;
-  background-color: rgba(0, 0, 0, 0.3); /* Unificado oscuro */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  font-size: 0.95rem;
-  color: white;
-  transition: var(--transition);
-  outline: none;
-  font-family: inherit;
-}
-
-/* Ajuste específico para iconos en Auth */
-.form-input {
-  padding-left: 44px; /* Espacio para icono */
-  padding-right: 45px; /* Espacio para ojo */
-}
-
-.input-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #71717a;
-  font-size: 1.1rem;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #71717a;
-  cursor: pointer;
-  font-size: 1.1rem;
-  z-index: 20;
-}
-
-.form-input:focus, .form-control:focus {
-  border-color: var(--brand-red);
-  background-color: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 4px rgba(238, 37, 26, 0.1);
-}
-
-textarea.form-control {
-  resize: vertical;
-  min-height: 100px;
-}
-
-/* BOTONES GENERALES */
-.btn, .btn-block {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background-color: var(--brand-red);
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: var(--transition);
-  margin-top: 1rem;
-}
-
-.btn:hover, .btn-block:hover {
-  background-color: #c91f16;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(238, 37, 26, 0.4);
-}
-
-/* Footer Auth */
-.auth-footer {
-  margin-top: 2rem;
-  font-size: 0.9rem;
-  color: var(--text-gray);
-}
-.auth-footer a {
-  color: var(--brand-yellow);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* =========================================
-   3. ESTILOS DEL DASHBOARD Y HEADER
-   ========================================= */
-
-.Container {
+.container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Header */
+.dashboard-container, .auth-container {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 60px;
+}
+
+/* Centrado específico para Login/Registro */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh; 
+}
+
+/* Contenedor del Formulario en Dashboard (Para que no ocupe todo el ancho) */
+.form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.form h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: var(--brand-yellow);
+}
+
+/* =========================================
+   3. HEADER (ESTILO GLASSMORPHISM)
+   ========================================= */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding: 15px 30px;
+  margin-bottom: 30px;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header .logo a {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    text-decoration: none;
+    letter-spacing: -0.5px;
 }
 
 .header ul {
@@ -269,137 +108,290 @@ textarea.form-control {
 }
 
 .header a {
-  color: var(--text-white);
+  color: var(--text-gray);
   text-decoration: none;
   font-weight: 500;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: var(--transition);
 }
 
-.header a:hover {
-  color: var(--brand-yellow);
-}
+.header a:hover { color: var(--brand-yellow); }
 
-/* --- SOLUCIÓN BOTÓN HEADER (Transparente y Elegante) --- */
+/* Botón de Salir en Header */
 .header .btn {
-  background-color: transparent !important; /* Forzamos transparencia */
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--text-gray);
-  padding: 8px 16px;
-  width: auto; /* Que no ocupe todo el ancho */
-  margin-top: 0;
-  font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 16px;
+    margin: 0;
+    width: auto;
 }
-
 .header .btn:hover {
-  background-color: rgba(238, 37, 26, 0.15) !important;
-  border-color: var(--brand-red);
-  color: white;
-  box-shadow: 0 0 15px rgba(238, 37, 26, 0.4);
-  transform: translateY(0);
-}
-
-/* Títulos */
-.heading {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-.heading p {
-  color: var(--text-gray);
-  font-size: 1.2rem;
-}
-
-/* Formulario Dashboard */
-.form {
-  width: 70%;
-  margin: 0 auto 3rem auto;
+    border-color: var(--brand-red);
+    color: var(--brand-red);
+    background: rgba(238, 37, 26, 0.1);
 }
 
 /* =========================================
-   4. GRILLA Y TARJETAS (Dashboard)
+   4. FORMULARIOS E INPUTS
    ========================================= */
+.form-group {
+  margin-bottom: 1.25rem;
+}
 
-/* CONTENEDOR DE LA GRILLA */
-.content {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 Columnas */
-  gap: 25px;
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+/* Input General */
+.form-control {
   width: 100%;
+  padding: 12px 16px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+  outline: none;
+}
+
+/* Input específico para el File Upload */
+input[type="file"].form-control {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.form-control:focus {
+  border-color: var(--brand-yellow);
+  box-shadow: 0 0 0 2px rgba(252, 163, 17, 0.2);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Inputs de Login (Con espacio para icono) */
+.form-input { 
+    padding-left: 44px !important; 
+}
+
+/* Botones */
+.btn, .btn-block {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--brand-red);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover, .btn-block:hover {
+  background-color: #c91f16;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(238, 37, 26, 0.3);
+}
+
+/* =========================================
+   5. TARJETAS DE HERRAMIENTAS (GRID)
+   ========================================= */
+.dashboard-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dashboard-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 5px; }
+
+.herramientas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
   padding-bottom: 50px;
 }
 
-/* Responsivo */
-@media (max-width: 900px) {
-  .content { grid-template-columns: repeat(2, 1fr); }
-  .form { width: 90%; }
-}
-
-@media (max-width: 600px) {
-  .content { grid-template-columns: 1fr; }
-  .header { flex-direction: column; gap: 15px; }
-}
-
-/* TARJETA INDIVIDUAL */
-.herramienta, .goal {
-  background-color: var(--card-bg);
+.herramienta {
+  background: var(--card-bg);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 20px;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: var(--transition);
-  backdrop-filter: blur(10px);
-  display: flex;           /* Para asegurar contenido vertical */
-  flex-direction: column; 
-  justify-content: space-between;
+  position: relative;
 }
 
 .herramienta:hover {
-  transform: translateY(-5px);
-  border-color: var(--brand-red);
+    transform: translateY(-5px);
+    border-color: rgba(252, 163, 17, 0.4); /* Brillo amarillo al hover */
 }
 
-.herramienta h2 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: var(--brand-yellow);
+/* Imagen de la tarjeta */
+.card-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #1a1a1a;
 }
 
-.herramienta div {
-  font-size: 0.85rem;
-  color: var(--text-gray);
-  margin-top: 5px;
+.img-placeholder {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
+
+.card-date { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
+.herramienta h2 { font-size: 1.4rem; margin-bottom: 5px; color: #fff; }
+.card-brand { color: var(--text-gray); font-size: 0.9rem; margin-bottom: 10px; }
+.card-user { font-size: 0.85rem; color: #34d399; font-style: italic; margin-bottom: 10px; }
 
 .precio-tag {
-  background: rgba(238, 37, 26, 0.2);
-  color: var(--brand-red);
-  padding: 5px 10px;
+    display: inline-block;
+    background: rgba(252, 163, 17, 0.15);
+    color: var(--brand-yellow);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.card-actions {
+    margin-top: auto; /* Empuja botones al fondo */
+    display: flex;
+    gap: 10px;
+}
+
+/* Botón de eliminar (Basura) */
+.close {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #666;
+    width: 45px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.close:hover {
+    color: var(--brand-red);
+    border-color: var(--brand-red);
+    background: rgba(238, 37, 26, 0.1);
+}
+
+/* =========================================
+   6. AUTH CARDS (LOGIN/REGISTER)
+   ========================================= */
+.auth-card {
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
   border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  display: inline-block;
-  margin-bottom: 10px;
-  align-self: flex-start; /* Alineado a la izquierda */
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-/* Botones de acción en tarjetas */
-.close, .edit-icon {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-size: 1.2rem;
-  color: var(--text-gray);
-  transition: 0.3s;
+.auth-icon {
+    font-size: 3rem;
+    color: var(--brand-red);
+    margin-bottom: 15px;
 }
-.close:hover { color: var(--brand-red); transform: scale(1.2); }
 
-.edit-icon { right: 50px; }
-.edit-icon:hover { color: var(--brand-yellow); }
+.auth-title { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+.auth-subtitle { color: var(--text-gray); margin-bottom: 30px; }
+
+.auth-footer { margin-top: 20px; color: #666; font-size: 0.9rem; }
+.auth-footer a { color: var(--brand-yellow); font-weight: bold; }
+
+/* SPINNER */
+.loadingSpinnerContainer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 5000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loadingSpinner {
+  width: 64px; height: 64px;
+  border: 8px solid;
+  border-color: var(--brand-red) transparent var(--brand-red) transparent;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+/* --- AGREGAR AL FINAL DE INDEX.CSS --- */
+
+/* Botón Fantasma (Transparente con borde sutil) */
+.btn-ghost {
+  background: transparent;
+  color: #a1a1aa; /* Gris claro */
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid transparent; /* Para que no salte al hacer hover */
+}
+
+.btn-ghost:hover {
+  color: var(--brand-yellow);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Iconos de navegación un poco más grandes */
+.btn-ghost svg {
+  font-size: 1.1rem;
+}
+
+/* RESPONSIVE: En celulares, ocultamos el texto y dejamos solo iconos */
+@media (max-width: 768px) {
+  .nav-text {
+    display: none; /* Oculta la palabra "Catálogo", "Perfil", etc. */
+  }
+  
+  .header {
+    padding: 10px 15px; /* Reduce padding en móvil */
+  }
+  
+  .header ul {
+    gap: 10px; /* Reduce espacio entre iconos */
+  }
+
+  .btn-ghost {
+    padding: 10px; /* Botones más cuadrados para tocar con el dedo */
+  }
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
