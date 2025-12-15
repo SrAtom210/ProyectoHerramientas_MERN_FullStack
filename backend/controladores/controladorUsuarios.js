@@ -74,4 +74,38 @@ const generarTokenJWT = id => jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '5d',
 });
 
-module.exports = { registroUsuario, loginUsuario, obtenerUsuarioActual};
+// @desc    Actualizar perfil de usuario
+// @route   PUT /api/usuarios/perfil
+// @access  Privado
+const actualizarPerfil = asyncHandler(async (req, res) => {
+    const usuario = await Usuario.findById(req.usuario.id);
+
+    if (!usuario) {
+        res.status(404);
+        throw new Error('Usuario no encontrado');
+    }
+
+    // 1. Actualizar Nombre
+    if (req.body.nombre) {
+        usuario.nombre = req.body.nombre;
+    }
+
+    // 2. Actualizar Contraseña (si se envía)
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        usuario.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    // Guardamos en la BD
+    const usuarioActualizado = await usuario.save();
+
+    // Devolvemos los datos nuevos (incluyendo el token viejo para no desloguear)
+    res.status(200).json({
+        _id: usuarioActualizado._id,
+        nombre: usuarioActualizado.nombre,
+        email: usuarioActualizado.email,
+        token: req.headers.authorization.split(' ')[1] // Mantenemos el token actual
+    });
+});
+
+module.exports = { registroUsuario, loginUsuario, obtenerUsuarioActual, actualizarPerfil};

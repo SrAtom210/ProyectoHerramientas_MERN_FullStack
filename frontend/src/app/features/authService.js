@@ -29,10 +29,29 @@ const logout = () => {
     localStorage.removeItem('user');
 };
 
+// Actualizar perfil de usuario
+const actualizarPerfil = async (userData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+    // PUT a /api/usuarios/perfil
+    const response = await axios.put(API_URL + 'perfil', userData, config);
+
+    // Actualizamos el localStorage con los nuevos datos
+    if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data));
+    }
+
+    return response.data;
+};
+
 const authService = {
     registro, // <--- AQUÍ ESTÁ EL ARREGLO DE "IS NOT A FUNCTION"
     login,
-    logout
+    logout,
+    actualizarPerfil
 };
 
 export default authService;

@@ -1,20 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { borrarHerramienta } from '../features/herramientasSlice'; 
-import { FaTrash, FaShoppingCart, FaHammer, FaEdit } from 'react-icons/fa';
+// ✅ Agregamos FaBan para el icono de prohibido/ocupado
+import { FaTrash, FaShoppingCart, FaHammer, FaEdit, FaBan } from 'react-icons/fa';
 
 function HerramientaItem({ herramienta }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  // ✅ CORRECCIÓN DE SEGURIDAD (Defensive Coding)
-  // 1. Intentamos obtener el ID del dueño de forma segura con '?.'
-  // Si herramienta.user es null, esto devolverá undefined en lugar de romper la app.
   const herramientaUserId = herramienta.user?._id || herramienta.user;
-
-  // 2. Comparamos solo si tenemos ambos datos
   const esMio = user && herramientaUserId === user._id;
+  
+  // ✅ Detectamos si está rentada (viene del backend)
+  const estaRentada = herramienta.rentada; 
 
   const irADetalles = () => {
     navigate(`/herramienta/${herramienta._id}`);
@@ -43,29 +42,49 @@ function HerramientaItem({ herramienta }) {
         src = src.replace(/\\/g, '/');
         src = `http://penrose512.jcarlos19.com:8000/${src}`;
     }
-    return <img src={src} alt={herramienta.nombre} className="card-img" />;
+    return <img src={src} alt={herramienta.nombre} className="card-img" style={{opacity: estaRentada ? 0.6 : 1}} />;
   };
 
   return (
-    <div className='herramienta'>
+    <div className='herramienta' style={{ position: 'relative' }}>
+      
+      {/* ✅ BADGE VISUAL: Si está rentada, mostramos etiqueta roja */}
+      {estaRentada && (
+          <div style={{
+              position: 'absolute',
+              top: '30px',
+              right: '30px',
+              backgroundColor: '#cf3e3e',
+              color: 'white',
+              padding: '5px 10px',
+              borderRadius: '5px',
+              fontWeight: 'bold',
+              fontSize: '0.8rem',
+              zIndex: 10,
+              boxShadow: '0 2px 5px rgba(0,0,0,0.5)'
+          }}>
+              OCUPADO
+          </div>
+      )}
+
       {renderImagen()}
 
       <div className="card-date">
          {new Date(herramienta.createdAt).toLocaleDateString('es-MX')}
       </div>
       
-      <h2>{herramienta.nombre}</h2>
+      <h2 style={{ color: estaRentada ? '#777' : 'white' }}>{herramienta.nombre}</h2>
       <p className="card-brand">Marca: {herramienta.marca}</p>
 
-      {/* ✅ CORRECCIÓN VISUAL:
-          Usamos '?.' para acceder al nombre. Si no tiene usuario, mostramos "Usuario desconocido" */}
       {!esMio && (
          <p className="card-user">
              Publicado por: {herramienta.user?.nombre || 'Usuario desconocido'}
          </p>
       )}
 
-      <div className='precio-tag'>${herramienta.precio} / día</div>
+      <div className='precio-tag' style={{ opacity: estaRentada ? 0.5 : 1 }}>
+          ${herramienta.precio} / día
+      </div>
 
       <div className="card-actions">
         {esMio ? (
@@ -91,9 +110,26 @@ function HerramientaItem({ herramienta }) {
             </>
         ) : (
             // === OPCIONES DE CLIENTE ===
-            <button className='btn' onClick={irADetalles} style={{flex: 1}}>
-                <FaShoppingCart /> Rentar
-            </button>
+            // ✅ LÓGICA DE BLOQUEO: Si está rentada, mostramos botón gris y deshabilitado
+            estaRentada ? (
+                <button 
+                    className='btn' 
+                    disabled={true} // Bloquea el click
+                    style={{
+                        flex: 1, 
+                        background: '#333', 
+                        color: '#777', 
+                        cursor: 'not-allowed', 
+                        border: '1px solid #444'
+                    }}
+                >
+                    <FaBan /> No Disponible
+                </button>
+            ) : (
+                <button className='btn' onClick={irADetalles} style={{flex: 1}}>
+                    <FaShoppingCart /> Rentar
+                </button>
+            )
         )}
       </div>
     </div>

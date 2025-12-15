@@ -363,3 +363,28 @@ textarea.form-control { resize: vertical; min-height: 100px; }
   animation: spin 1.2s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Estilo para el botón "Volver" */
+.btn-back {
+  background-color: transparent; /* Fondo transparente */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
+  color: #a1a1aa; /* Color de texto gris suave */
+  padding: 8px 16px; /* Espaciado interno cómodo */
+  border-radius: 8px; /* Bordes redondeados */
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex; /* Para alinear icono y texto */
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease; /* Animación suave */
+  margin-bottom: 20px; /* Espacio debajo del botón */
+}
+
+/* Efecto al pasar el mouse */
+.btn-back:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente blanco */
+  color: var(--brand-yellow); /* Texto amarillo marca */
+  border-color: var(--brand-yellow); /* Borde amarillo */
+  transform: translateX(-5px); /* Pequeño movimiento a la izquierda */
+}

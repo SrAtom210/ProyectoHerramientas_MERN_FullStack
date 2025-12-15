@@ -72,8 +72,8 @@ function HerramientaDetalles() {
 
   return (
     <div className="dashboard-container">
-        <div className="container" style={{ maxWidth: '900px' }}>
-            <button className='btn-ghost' onClick={() => navigate('/')} style={{ marginBottom: '20px' }}>
+        <div className="container" style={{ maxWidth: '900px' }}> 
+            <button className='btn-back' onClick={() => navigate('/')} style={{ marginBottom: '20px' }}>
                 <FaArrowLeft /> Volver al Catálogo
             </button>
 

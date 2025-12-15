@@ -1,16 +1,36 @@
 const asyncHandler = require('express-async-handler');
 const Herramienta = require('../modelos/ModeloHerramientas');
+const Renta = require('../modelos/ModeloRentas');
 
 // @desc    Obtener TODAS las herramientas (Para el Catálogo Global)
 // @route   GET /api/herramientas
 // @access  Privado (o Público, depende de tu lógica)
 const obtenerHerramientas = asyncHandler(async (req, res) => {
-    // CAMBIO CLAVE: Quitamos el filtro { user: req.usuario.id }
-    // Usamos find() vacío para traer TODO.
-    // Agregamos .populate('user') para ver el nombre del dueño en la tarjeta.
+    // 1. Traemos todas las herramientas
     const herramientas = await Herramienta.find().populate('user', 'nombre email');
+
+    // 2. Traemos todas las rentas que estén activas hoy
+    // (Una renta está activa si no tiene fechaFin o si fechaFin es mayor a hoy)
+    const hoy = new Date();
     
-    res.status(200).json(herramientas);
+    const rentasActivas = await Renta.find({
+        fechaFin: { $gte: hoy } // $gte significa "Greater Than or Equal" (Mayor o igual a hoy)
+    });
+
+    // Creamos un Set con los IDs de las herramientas ocupadas para búsqueda rápida
+    const herramientasOcupadasIds = new Set(rentasActivas.map(r => r.herramienta.toString()));
+
+    // 3. Convertimos las herramientas a objetos planos y agregamos la bandera "rentada"
+    const herramientasConEstado = herramientas.map(herramienta => {
+        const h = herramienta.toObject(); // Convertir a objeto JS normal para poder agregarle propiedades
+        
+        // Si el ID de esta herramienta está en la lista de ocupadas, está rentada
+        h.rentada = herramientasOcupadasIds.has(h._id.toString());
+        
+        return h;
+    });
+    
+    res.status(200).json(herramientasConEstado);
 });
 
 // @desc    Crear herramienta

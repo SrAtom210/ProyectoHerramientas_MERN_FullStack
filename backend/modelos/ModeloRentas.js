@@ -4,20 +4,27 @@ const rentaSchema = mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Usuario' // Conecta con tu colección de Usuarios
+        ref: 'Usuario'
     },
     herramienta: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Herramienta' // Conecta con tu colección de Herramientas
+        ref: 'Herramienta'
     },
     fechaInicio: {
         type: Date,
-        default: Date.now // Se pone la fecha de hoy automáticamente
+        required: true,
+        default: Date.now
     },
     fechaFin: {
-        type: Date,
-        // Opcional: Podrías calcularla después o pedirla al usuario
+        type: Date
+        // Se guarda la fecha de finalización enviada desde el frontend
+    },
+    // ✅ CAMPO FALTANTE AGREGADO:
+    precioTotal: {
+        type: Number,
+        required: true,
+        default: 0
     },
     estado: {
         type: String,
@@ -25,7 +32,7 @@ const rentaSchema = mongoose.Schema({
         default: 'activa'
     }
 }, {
-    timestamps: true // Crea createdAt y updatedAt
+    timestamps: true
 });
 
 module.exports = mongoose.model('Renta', rentaSchema);

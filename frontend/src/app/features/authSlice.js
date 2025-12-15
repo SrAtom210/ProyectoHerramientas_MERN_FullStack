@@ -43,6 +43,19 @@ export const logout = createAsyncThunk('auth/logout', async () => {
     await authService.logout();
 });
 
+export const actualizarUsuario = createAsyncThunk(
+    'auth/actualizar',
+    async (userData, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await authService.actualizarPerfil(userData, token);
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -89,6 +102,20 @@ export const authSlice = createSlice({
             // Logout (NUEVO)
             .addCase(logout.fulfilled, (state) => {
                 state.user = null;
+            })
+            .addCase(actualizarUsuario.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(actualizarUsuario.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.user = action.payload; // Actualizamos el usuario en memoria
+                state.message = 'Perfil actualizado correctamente';
+            })
+            .addCase(actualizarUsuario.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
     },
 });
