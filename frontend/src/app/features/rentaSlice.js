@@ -43,6 +43,23 @@ export const obtenerMisRentas = createAsyncThunk(
   }
 );
 
+// ✅ NUEVO: Cancelar / Devolver renta
+export const cancelarRenta = createAsyncThunk(
+  'rentas/cancelar',
+  async (id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await rentaService.cancelarRenta(id, token);
+    } catch (error) {
+      const message =
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const rentaSlice = createSlice({
   name: 'renta',
   initialState,
@@ -51,6 +68,7 @@ export const rentaSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // --- CREAR RENTA ---
       .addCase(crearRenta.pending, (state) => {
         state.isLoading = true;
       })
@@ -64,6 +82,8 @@ export const rentaSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
+      
+      // --- OBTENER RENTAS ---
       .addCase(obtenerMisRentas.pending, (state) => {
         state.isLoading = true;
       })
@@ -73,6 +93,23 @@ export const rentaSlice = createSlice({
         state.rentas = action.payload;
       })
       .addCase(obtenerMisRentas.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // --- ✅ NUEVO: CANCELAR RENTA ---
+      .addCase(cancelarRenta.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(cancelarRenta.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // Filtramos la renta eliminada del estado local para que desaparezca instantáneamente
+        // (Asumiendo que el backend devuelve { id: "..." })
+        state.rentas = state.rentas.filter((renta) => renta._id !== action.payload.id);
+      })
+      .addCase(cancelarRenta.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

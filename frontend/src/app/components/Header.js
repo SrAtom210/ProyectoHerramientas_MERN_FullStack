@@ -20,7 +20,7 @@ function Header() {
       <div className="logo">
         <Link to='/' style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem', fontWeight: 'bold' }}>
             <FaTools size={24} style={{color: '#fca311'}}/> 
-            ToolRental
+            TaLadrando
         </Link>
       </div>
 
@@ -39,7 +39,7 @@ function Header() {
               {/* 2. NUEVO: Mis Herramientas (Gestión) */}
               <li>
                   <Link to='/mis-herramientas' className="btn-ghost" title="Gestionar mis equipos">
-                      <FaHammer /> <span className="nav-text">Mis Equipos</span>
+                      <FaHammer /> <span className="nav-text">Mis Herramientas</span>
                   </Link>
               </li>
 

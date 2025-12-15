@@ -8,9 +8,10 @@ import Login from './app/components/Login';
 import Registro from './app/components/Registro';
 import Header from './app/components/Header';
 import MisRentas from './app/components/MisRentas'; 
-// ✅ NUEVO: Importamos los componentes faltantes
 import MisHerramientas from './app/components/MisHerramientas';
 import Perfil from './app/components/Perfil';
+import CrearHerramienta from './app/components/CrearHerramienta';
+import EditarHerramienta from './app/components/EditarHerramienta';
 
 function App() {
   return (
@@ -19,20 +20,15 @@ function App() {
         <div className='Container'>
           <Header />
           <Routes>
-            {/* Ruta Principal (Catálogo General) */}
             <Route path='/' element={<Dashboard />} />
-            
-            {/* Rutas de Autenticación */}
             <Route path='/login' element={<Login />} />
             <Route path='/registro' element={<Registro />} />
-            
-            {/* Rutas de Usuario */}
             <Route path='/mis-rentas' element={<MisRentas />} />
-            
-            {/* ✅ NUEVAS RUTAS AGREGADAS */}
             <Route path='/mis-herramientas' element={<MisHerramientas />} />
             <Route path='/mi-perfil' element={<Perfil />} />
-
+            <Route path='/crear-herramienta' element={<CrearHerramienta />} />
+            <Route path='/editar-herramienta/:id' element={<EditarHerramienta />} />
+            
           </Routes>
         </div>
       </Router>
@@ -40,5 +36,4 @@ function App() {
     </>
   );
 }
-
 export default App;

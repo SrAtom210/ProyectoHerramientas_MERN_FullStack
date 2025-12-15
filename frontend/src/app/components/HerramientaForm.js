@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { crearHerramienta, actualizarHerramienta } from '../features/herramientasSlice';
 
-function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
+function HerramientaForm({ herramientaEditar, setHerramientaEditar, alTerminar }) {
     const [formData, setFormData] = useState({
         nombre: '',
         marca: '',
@@ -10,7 +10,6 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         descripcion: ''
     });
 
-    // ✅ NUEVO: Estado separado para la imagen
     const [imagen, setImagen] = useState(null);
 
     const { nombre, marca, precio, descripcion } = formData;
@@ -24,8 +23,6 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                 precio: herramientaEditar.precio,
                 descripcion: herramientaEditar.descripcion || ''
             });
-            // Nota: No podemos poner el valor de la imagen anterior en un input type="file"
-            // por seguridad del navegador, así que se queda en null a menos que suban una nueva.
         }
     }, [herramientaEditar]);
 
@@ -36,22 +33,18 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         }));
     };
 
-    // ✅ NUEVO: Manejador específico para el archivo
     const onFileChange = (e) => {
-        // Guardamos el primer archivo seleccionado
         setImagen(e.target.files[0]);
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
-        // Validaciones de campos de texto
         if (!nombre || !marca || !precio) {
             alert("Por favor completa todos los campos de texto obligatorios");
             return;
         }
 
-        // ✅ NUEVO: Validación de Imagen (Obligatoria solo al Crear)
         if (!herramientaEditar && !imagen) {
             alert("Es obligatorio subir una imagen para crear una herramienta");
             return;
@@ -62,14 +55,12 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
             return;
         }
 
-        // ✅ NUEVO: Preparamos los datos como FormData (Necesario para enviar archivos)
         const herramientaData = new FormData();
         herramientaData.append('nombre', nombre);
         herramientaData.append('marca', marca);
         herramientaData.append('precio', precio);
         herramientaData.append('descripcion', descripcion);
         
-        // Solo agregamos la imagen si el usuario seleccionó una
         if (imagen) {
             herramientaData.append('imagen', imagen);
         }
@@ -77,27 +68,42 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
         if (herramientaEditar) {
             const datosActualizados = {
                 id: herramientaEditar._id,
-                herramientaData: herramientaData // Ahora enviamos el FormData
+                herramientaData: herramientaData 
             };
-            dispatch(actualizarHerramienta(datosActualizados));
-            setHerramientaEditar(null);
+            
+            await dispatch(actualizarHerramienta(datosActualizados));
+            
+            // ✅ CORRECCIÓN AQUÍ:
+            // Verificamos si existe la función antes de llamarla.
+            // (En la página de editar, esta función no existe y no es necesaria porque redireccionamos).
+            if (setHerramientaEditar) {
+                setHerramientaEditar(null);
+            }
+            
+            if (alTerminar) alTerminar();
+
         } else {
-            dispatch(crearHerramienta(herramientaData)); // Enviamos el FormData
+            await dispatch(crearHerramienta(herramientaData)); 
+            if (alTerminar) alTerminar();
         }
 
-        // Limpiar formulario
         setFormData({ nombre: '', marca: '', precio: '', descripcion: '' });
         setImagen(null);
         
-        // Limpiar visualmente el input file
-        document.getElementById('imagenInput').value = ""; 
+        // Verificamos que el elemento exista antes de intentar limpiar el valor
+        const fileInput = document.getElementById('imagenInput');
+        if (fileInput) fileInput.value = ""; 
     };
 
     const cancelarEdicion = () => {
-        setHerramientaEditar(null);
+        // También protegemos aquí por seguridad
+        if (setHerramientaEditar) {
+            setHerramientaEditar(null);
+        }
         setFormData({ nombre: '', marca: '', precio: '', descripcion: '' });
         setImagen(null);
-        document.getElementById('imagenInput').value = "";
+        const fileInput = document.getElementById('imagenInput');
+        if (fileInput) fileInput.value = "";
     };
 
     return (
@@ -157,17 +163,15 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                     />
                 </div>
 
-                {/* ✅ NUEVO: Input para subir imagen */}
                 <div className='form-group'>
                     <label htmlFor="imagenInput">Imagen de la herramienta</label>
                     <input 
                         type="file" 
                         name="imagen" 
-                        id="imagenInput" // ID para poder limpiarlo con JS
+                        id="imagenInput" 
                         onChange={onFileChange}
                         className="form-control"
                         accept="image/png, image/jpeg, image/jpg, image/webp"
-                        // Solo es required si NO estamos editando (al editar es opcional cambiar la foto)
                         required={!herramientaEditar} 
                     />
                     {herramientaEditar && (
@@ -192,14 +196,17 @@ function HerramientaForm({ herramientaEditar, setHerramientaEditar }) {
                         {herramientaEditar ? 'Actualizar Herramienta' : 'Agregar Herramienta'}
                     </button>
                     
-                    {herramientaEditar && (
+                    {/* El botón de cancelar solo tiene sentido si estamos en la vista incrustada (Dashboard anterior) 
+                        o si queremos limpiar el formulario, pero ahora ya tenemos el botón "Volver" arriba. 
+                        Podemos dejarlo, pero con la protección que añadí a cancelarEdicion no fallará. */}
+                    {herramientaEditar && setHerramientaEditar && (
                         <button 
                             type="button" 
                             className="btn btn-block" 
                             onClick={cancelarEdicion} 
                             style={{marginTop: '10px', backgroundColor: '#555', color: 'white'}}
                         >
-                            Cancelar Edición
+                            Limpiar Formulario
                         </button>
                     )}
                 </div>

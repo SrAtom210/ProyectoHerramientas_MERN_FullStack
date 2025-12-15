@@ -1,89 +1,77 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import HerramientaForm from './HerramientaForm'; 
 import HerramientaItem from './HerramientaItem';
 import Spinner from './Spinner';
 import { reset, obtenerHerramientas } from '../features/herramientasSlice';
+import { FaSearch } from 'react-icons/fa';
 
 function Dashboard() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const { user } = useSelector((state) => state.auth);
-    const { herramientas, isLoading, isError, message } = useSelector(
-        (state) => state.herramientas
-    );
+  const { user } = useSelector((state) => state.auth);
+  const { herramientas, isLoading, isError, message } = useSelector(
+    (state) => state.herramientas
+  );
 
-    const [herramientaEditar, setHerramientaEditar] = useState(null);
+  useEffect(() => {
+    if (isError) console.log(message);
 
-    const activarEdicion = (herramienta) => {
-        setHerramientaEditar(herramienta);
-        // Opcional: Hacer scroll hacia arriba suavemente para ver el formulario
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    useEffect(() => {
-        if (isError) {
-            console.log(message);
-        }
-
-        if (!user) {
-            navigate('/login');
-        } else {
-            dispatch(obtenerHerramientas());
-        }
-
-        return () => {
-            dispatch(reset());
-        };
-    }, [user, navigate, isError, message, dispatch]);
-
-    if (isLoading) {
-        return <Spinner />;
+    if (!user) {
+      navigate('/login');
+    } else {
+      dispatch(obtenerHerramientas());
     }
 
-    return (
-        <div className="dashboard-container">
-            <section className='container'>
-                
-                {/* --- NUEVO DISEÑO DE ENCABEZADO --- */}
-                <div className="dashboard-heading">
-                    <h1 className="dashboard-title">
-                        Bienvenido {user && user.nombre} <span style={{color: '#fca311'}}>.</span>
-                    </h1>
-                    <p className="dashboard-subtitle">
-                        Panel de Administración de Renta de Herramientas
-                    </p>
-                </div>
+    return () => {
+      dispatch(reset());
+    };
+  }, [user, navigate, isError, message, dispatch]);
 
-                {/* Mantenemos tu formulario aquí porque es tu lógica actual */}
-                <div style={{ marginBottom: '40px' }}>
-                    <HerramientaForm 
-                        herramientaEditar={herramientaEditar} 
-                        setHerramientaEditar={setHerramientaEditar} 
-                    />
-                </div>
+  // ✅ FILTRO: Mostrar solo herramientas que NO son mías
+  const catalogoDisponible = herramientas.filter(h => {
+      const ownerId = h.user._id || h.user; // Manejo por si viene populado o solo ID
+      return ownerId !== user?._id;
+  });
 
-                {/* --- NUEVO GRID DE HERRAMIENTAS --- */}
-                {herramientas.length > 0 ? (
-                    <div className="herramientas-grid">
-                        {herramientas.map((herramienta) => (
-                            <HerramientaItem 
-                                key={herramienta._id} 
-                                herramienta={herramienta}
-                                activarEdicion={activarEdicion} // Mantenemos tu prop de edición
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <h3 style={{gridColumn: '1 / -1', textAlign: 'center', color: '#a1a1aa', marginTop: '20px'}}>
-                        No has publicado herramientas aún
-                    </h3>
-                )}
-            </section>
+  if (isLoading) return <Spinner />;
+
+  return (
+    <div className="dashboard-container">
+      <section className="container">
+        
+        <div className="dashboard-heading">
+            <h1 className="dashboard-title">
+                Catálogo Disponible <span style={{color: '#fca311'}}>.</span>
+            </h1>
+            <p className="dashboard-subtitle">
+                Explora y renta equipos de otros usuarios cercanos a ti.
+            </p>
         </div>
-    );
+
+        {/* YA NO ESTÁ EL FORMULARIO AQUÍ */}
+
+        {catalogoDisponible.length > 0 ? (
+            <div className="herramientas-grid">
+                {catalogoDisponible.map((herramienta) => (
+                    <HerramientaItem 
+                        key={herramienta._id} 
+                        herramienta={herramienta}
+                        // activarEdicion={activarEdicion} // Ya no editamos desde el catálogo público
+                    />
+                ))}
+            </div>
+        ) : (
+            <div style={{textAlign: 'center', marginTop: '50px', color: '#a1a1aa'}}>
+                <FaSearch size={50} style={{marginBottom: '20px', opacity: 0.5}}/>
+                <h3>No hay herramientas disponibles para rentar.</h3>
+                <p>Sé el primero en publicar una.</p>
+            </div>
+        )}
+      </section>
+    </div>
+  );
 }
 
 export default Dashboard;

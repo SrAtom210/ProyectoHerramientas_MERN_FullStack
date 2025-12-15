@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import HerramientaItem from './HerramientaItem';
 import Spinner from './Spinner';
 import { obtenerHerramientas, reset } from '../features/herramientasSlice';
-import { FaHammer } from 'react-icons/fa';
+import { FaPlus, FaHammer } from 'react-icons/fa';
 
 function MisHerramientas() {
   const navigate = useNavigate();
@@ -39,18 +39,29 @@ function MisHerramientas() {
       return toolUserId === user?._id;
   });
 
-  if (isLoading) { return <Spinner />; }
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="dashboard-container">
         <section className="container">
             <div className="dashboard-heading">
                 <h1 className="dashboard-title">
-                    Mis Equipos <span style={{color: '#fca311'}}>.</span>
+                    Mis Herramientas <span style={{color: '#fca311'}}>.</span>
                 </h1>
                 <p className="dashboard-subtitle">
-                    Gestiona las herramientas que has puesto en renta
+                    Gestiona tu inventario
                 </p>
+            </div>
+
+            {/* ✅ NUEVO BOTÓN DE PUBLICAR */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
+                <button 
+                    className='btn' 
+                    style={{ maxWidth: '300px', background: '#fca311', color: '#000' }}
+                    onClick={() => navigate('/crear-herramienta')}
+                >
+                    <FaPlus /> Publicar nuevo equipo
+                </button>
             </div>
 
             {misTools.length > 0 ? (
@@ -59,14 +70,15 @@ function MisHerramientas() {
                         <HerramientaItem 
                             key={herramienta._id} 
                             herramienta={herramienta} 
+                            // Aquí podrías pasarle funciones para editar si quieres
                         />
                     ))}
                 </div>
             ) : (
-                <div style={{textAlign: 'center', marginTop: '50px', color: '#a1a1aa'}}>
+                <div style={{textAlign: 'center', marginTop: '30px', color: '#a1a1aa'}}>
                     <FaHammer size={50} style={{marginBottom: '20px', opacity: 0.5}}/>
-                    <h3>No has publicado ninguna herramienta aún.</h3>
-                    <p>Ve al inicio para agregar una nueva.</p>
+                    <h3>No tienes equipos publicados.</h3>
+                    <p>¡Dale click al botón de arriba para empezar a ganar dinero!</p>
                 </div>
             )}
         </section>

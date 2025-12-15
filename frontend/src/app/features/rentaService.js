@@ -27,9 +27,23 @@ const obtenerMisRentas = async (token) => {
   return response.data;
 };
 
+// ✅ NUEVO: Función para Devolver / Cancelar renta
+const cancelarRenta = async (rentaId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  // Petición DELETE a: http://.../api/rentas/:id
+  const response = await axios.delete(API_URL + rentaId, config);
+  return response.data;
+};
+
 const rentaService = {
   crearRenta,
   obtenerMisRentas,
+  cancelarRenta, // ⬅️ No olvides exportarla aquí
 };
 
 export default rentaService;

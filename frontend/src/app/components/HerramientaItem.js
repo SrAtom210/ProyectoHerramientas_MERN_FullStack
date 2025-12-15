@@ -1,21 +1,36 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { borrarHerramienta } from '../features/herramientasSlice'; 
-import { FaTrash, FaShoppingCart, FaHammer } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaHammer, FaEdit } from 'react-icons/fa';
 
 function HerramientaItem({ herramienta }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  // 2. Navegar a detalles (Para elegir fechas antes de rentar)
+  // Verificamos si el usuario actual es el dueño de esta herramienta
+  // Manejamos el caso donde herramienta.user sea un objeto o un ID string
+  const esMio = user && (
+      (herramienta.user._id && herramienta.user._id === user._id) || 
+      (herramienta.user === user._id)
+  );
+
   const irADetalles = () => {
     navigate(`/herramienta/${herramienta._id}`);
   };
 
-  // 3. LÓGICA PARA MOSTRAR LA IMAGEN
+  const irAEditar = () => {
+    navigate(`/editar-herramienta/${herramienta._id}`);
+  };
+
+  const confirmarBorrar = () => {
+    if(window.confirm('¿Estás seguro de que quieres eliminar esta herramienta? Esta acción no se puede deshacer.')) {
+        dispatch(borrarHerramienta(herramienta._id));
+    }
+  };
+
+  // Lógica de imagen (Igual que tenías)
   const renderImagen = () => {
-    // Si no hay foto, mostramos el icono del martillo por defecto
     if (!herramienta.imagen) {
         return (
             <div className="img-placeholder">
@@ -23,24 +38,16 @@ function HerramientaItem({ herramienta }) {
             </div>
         );
     }
-
     let src = herramienta.imagen;
-
-    // Si NO empieza con http, asumimos que es una foto subida al servidor (Multer)
     if (!src.startsWith('http')) {
-        // Corregimos las barras invertidas de Windows (\) por barras normales (/)
         src = src.replace(/\\/g, '/');
-        // Construimos la URL completa apuntando a tu backend
-        // Asegúrate de que este puerto (8000) sea el correcto de tu backend
         src = `http://penrose512.jcarlos19.com:8000/${src}`;
     }
-
     return <img src={src} alt={herramienta.nombre} className="card-img" />;
   };
 
   return (
     <div className='herramienta'>
-      {/* Renderizamos la imagen primero */}
       {renderImagen()}
 
       <div className="card-date">
@@ -50,29 +57,41 @@ function HerramientaItem({ herramienta }) {
       <h2>{herramienta.nombre}</h2>
       <p className="card-brand">Marca: {herramienta.marca}</p>
 
-      {/* Mostrar quién lo publicó (útil para el Marketplace) */}
-      {herramienta.user && (
+      {/* Solo mostramos el dueño si NO es mío (en el catálogo) */}
+      {!esMio && herramienta.user && (
          <p className="card-user">
-             Publicado por: {herramienta.user.nombre}
+             Publicado por: {herramienta.user.nombre || 'Usuario'}
          </p>
       )}
 
       <div className='precio-tag'>${herramienta.precio} / día</div>
 
       <div className="card-actions">
-        {/* El botón ahora lleva a detalles para configurar la renta */}
-        <button className='btn' onClick={irADetalles} style={{flex: 1}}>
-            <FaShoppingCart /> Rentar
-        </button>
+        {esMio ? (
+            // === OPCIONES DE DUEÑO (Editar / Borrar) ===
+            <>
+                <button 
+                    className='btn' 
+                    onClick={irAEditar} 
+                    style={{ background: '#333', border: '1px solid #555' }}
+                    title="Editar detalles"
+                >
+                    <FaEdit /> Editar
+                </button>
 
-        {/* 4. Solo mostramos el botón de borrar si el usuario logueado es el dueño */}
-        {user && herramienta.user && user._id === herramienta.user._id && (
-            <button 
-                onClick={() => dispatch(borrarHerramienta(herramienta._id))} 
-                className='close'
-                title="Borrar mi herramienta"
-            >
-                <FaTrash />
+                <button 
+                    className='btn' 
+                    onClick={confirmarBorrar} 
+                    style={{ background: 'rgba(238, 37, 26, 0.2)', color: '#ee251a', border: '1px solid #ee251a' }}
+                    title="Eliminar permanentemente"
+                >
+                    <FaTrash />
+                </button>
+            </>
+        ) : (
+            // === OPCIONES DE CLIENTE (Rentar) ===
+            <button className='btn' onClick={irADetalles} style={{flex: 1}}>
+                <FaShoppingCart /> Rentar
             </button>
         )}
       </div>
