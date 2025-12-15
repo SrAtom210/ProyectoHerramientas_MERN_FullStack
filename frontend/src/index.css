@@ -7,11 +7,13 @@
   --brand-red: #ee251a;      
   --brand-yellow: #fca311;   
   --dark-bg: #0a0a0a;
+  --auth-bg: #050505; 
   --card-bg: rgba(20, 20, 20, 0.7);
   --text-white: #ffffff;
   --text-gray: #a1a1aa;
   --radius: 12px;
   --transition: all 0.3s ease;
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,7 +26,6 @@ body {
   background-color: var(--dark-bg);
   min-height: 100vh;
   overflow-x: hidden;
-  /* Fondo técnico sutil */
   background-image: 
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -41,42 +42,131 @@ body {
   padding: 0 20px;
 }
 
-.dashboard-container, .auth-container {
+.dashboard-container {
   width: 100%;
   min-height: 100vh;
   padding-top: 20px;
   padding-bottom: 60px;
 }
 
-/* Centrado específico para Login/Registro */
+/* =========================================
+   3. ESTILOS ESPECÍFICOS DE AUTH (Login/Registro)
+   ========================================= */
 .auth-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh; 
-}
-
-/* Contenedor del Formulario en Dashboard (Para que no ocupe todo el ancho) */
-.form {
+  min-height: 100vh;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto 40px auto;
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background-color: var(--auth-bg);
+  overflow: hidden; 
+  background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-.form h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    color: var(--brand-yellow);
+/* ORBES DE LUZ FLOTANTES */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: -10%; left: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--brand-red), transparent 70%);
+  filter: blur(80px);
+  opacity: 0.6;
+  border-radius: 50%;
+  animation: floatRed 15s ease-in-out infinite alternate;
+  z-index: 0;
 }
+
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: -10%; right: -10%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--brand-yellow), transparent 70%);
+  filter: blur(80px);
+  opacity: 0.5;
+  border-radius: 50%;
+  animation: floatYellow 12s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes floatRed {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(100px, 50px) scale(1.1); }
+  100% { transform: translate(50px, 150px) scale(1); }
+}
+
+@keyframes floatYellow {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-120px, -50px) scale(1.2); }
+  100% { transform: translate(-50px, -100px) scale(1); }
+}
+
+/* TARJETA DE CRISTAL */
+.auth-card {
+  position: relative;
+  z-index: 10;
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
+  padding: 3.5rem 3rem;
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.auth-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+/* ELEMENTOS INTERNOS DE AUTH */
+.auth-icon-circle {
+  width: 80px; height: 80px;
+  margin: 0 auto 20px auto;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--brand-yellow);
+  box-shadow: 0 0 30px rgba(238, 226, 26, 0.15);
+}
+
+.hammer-anim { transition: transform 0.3s ease; }
+.auth-card:hover .hammer-anim { transform: rotate(-20deg); }
+
+.auth-title {
+  font-size: 2.2rem; font-weight: 800; color: #fff;
+  margin-bottom: 5px; letter-spacing: -1px;
+}
+
+.auth-subtitle {
+  color: #888; font-size: 0.95rem; margin-bottom: 30px;
+}
+
+.auth-footer {
+  margin-top: 30px; font-size: 0.9rem; color: #666;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1.5rem;
+}
+
+.link-highlight {
+  color: var(--brand-yellow); text-decoration: none; font-weight: 600; margin-left: 5px;
+}
+.link-highlight:hover { text-decoration: underline; color: #ffd60a; }
 
 /* =========================================
-   3. HEADER (ESTILO GLASSMORPHISM)
+   4. HEADER
    ========================================= */
 .header {
   display: flex;
@@ -93,67 +183,44 @@ body {
 }
 
 .header .logo a {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: white;
-    text-decoration: none;
-    letter-spacing: -0.5px;
+    font-size: 1.5rem; font-weight: 800; color: white;
+    text-decoration: none; letter-spacing: -0.5px;
 }
 
 .header ul {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  list-style: none;
+  display: flex; align-items: center; gap: 20px; list-style: none;
 }
 
 .header a {
-  color: var(--text-gray);
-  text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  color: var(--text-gray); text-decoration: none; font-weight: 500;
+  transition: var(--transition); display: flex; align-items: center; gap: 8px;
 }
-
 .header a:hover { color: var(--brand-yellow); }
 
-/* Botón de Salir en Header */
 .header .btn {
     background: transparent;
     border: 1px solid rgba(255,255,255,0.2);
-    padding: 8px 16px;
-    margin: 0;
-    width: auto;
+    padding: 8px 16px; margin: 0; width: auto;
 }
 .header .btn:hover {
-    border-color: var(--brand-red);
-    color: var(--brand-red);
+    border-color: var(--brand-red); color: var(--brand-red);
     background: rgba(238, 37, 26, 0.1);
 }
 
 /* =========================================
-   4. FORMULARIOS E INPUTS
+   5. FORMULARIOS E INPUTS
    ========================================= */
-.form-group {
-  margin-bottom: 1.25rem;
-}
+.form-group { margin-bottom: 1.5rem; text-align: left; }
+.form-label { display: block; font-size: 0.85rem; color: #d4d4d8; margin-bottom: 8px; font-weight: 500; margin-left: 4px; }
+.input-wrapper { position: relative; margin-bottom: 20px; }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-gray);
-    font-size: 0.9rem;
-}
-
-/* Input General */
-.form-control {
+/* Estilo Base para todos los inputs */
+.form-control, .form-input {
   width: 100%;
-  padding: 12px 16px;
-  background-color: rgba(0, 0, 0, 0.3);
+  padding: 14px 16px;
+  background-color: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   color: white;
   font-family: inherit;
   font-size: 1rem;
@@ -161,60 +228,69 @@ body {
   outline: none;
 }
 
-/* Input específico para el File Upload */
+/* Inputs específicos de Auth (con espacio para iconos) - AQUI ESTABA EL ERROR */
+.form-input { padding-left: 50px; }
+
+.form-control:focus, .form-input:focus {
+  border-color: var(--brand-red);
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 4px rgba(238, 37, 26, 0.15);
+}
+
+/* Iconos dentro del input (Auth) */
+.input-icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  color: #666; font-size: 1.1rem; transition: 0.3s;
+}
+.form-input:focus + .input-icon, .form-input:focus ~ .input-icon { color: var(--brand-red); }
+
+/* Toggle Password */
+.password-toggle {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: #666; cursor: pointer;
+}
+.password-toggle:hover { color: #fff; }
+
+/* Contenedor del Formulario en Dashboard */
+.form {
+  width: 100%; max-width: 600px; margin: 0 auto 40px auto;
+  background: var(--card-bg); padding: 30px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+.form h3 { text-align: center; margin-bottom: 20px; font-size: 1.5rem; color: var(--brand-yellow); }
+
+/* Input tipo Archivo */
 input[type="file"].form-control {
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
-    cursor: pointer;
+    padding: 10px; background-color: rgba(255, 255, 255, 0.05); cursor: pointer;
 }
-
-.form-control:focus {
-  border-color: var(--brand-yellow);
-  box-shadow: 0 0 0 2px rgba(252, 163, 17, 0.2);
-}
-
-textarea.form-control {
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* Inputs de Login (Con espacio para icono) */
-.form-input { 
-    padding-left: 44px !important; 
-}
+textarea.form-control { resize: vertical; min-height: 100px; }
 
 /* Botones */
-.btn, .btn-block {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
+.btn, .btn-block, .btn-primary {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
   background-color: var(--brand-red);
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+  color: white; font-size: 1rem; font-weight: 700; cursor: pointer;
   transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 
-.btn:hover, .btn-block:hover {
-  background-color: #c91f16;
+.btn-primary {
+  background: linear-gradient(90deg, var(--brand-red), #c1121f);
+  box-shadow: 0 10px 20px rgba(238, 37, 26, 0.3);
+}
+
+.btn:hover, .btn-block:hover, .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(238, 37, 26, 0.3);
+  box-shadow: 0 6px 20px rgba(238, 37, 26, 0.4);
+  background-color: #c91f16;
 }
 
 /* =========================================
-   5. TARJETAS DE HERRAMIENTAS (GRID)
+   6. TARJETAS DE HERRAMIENTAS
    ========================================= */
-.dashboard-heading {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
+.dashboard-heading { text-align: center; margin-bottom: 30px; }
 .dashboard-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 5px; }
 
 .herramientas-grid {
@@ -229,36 +305,23 @@ textarea.form-control {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: var(--transition);
-  position: relative;
+  display: flex; flex-direction: column;
+  transition: var(--transition); position: relative;
 }
 
 .herramienta:hover {
     transform: translateY(-5px);
-    border-color: rgba(252, 163, 17, 0.4); /* Brillo amarillo al hover */
+    border-color: rgba(252, 163, 17, 0.4);
 }
 
-/* Imagen de la tarjeta */
 .card-img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    background-color: #1a1a1a;
+    width: 100%; height: 220px; object-fit: cover;
+    border-radius: 8px; margin-bottom: 15px; background-color: #1a1a1a;
 }
 
 .img-placeholder {
-    width: 100%;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
-    margin-bottom: 15px;
+    width: 100%; height: 220px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 15px;
 }
 
 .card-date { font-size: 0.8rem; color: #666; margin-bottom: 5px; }
@@ -270,74 +333,27 @@ textarea.form-control {
     display: inline-block;
     background: rgba(252, 163, 17, 0.15);
     color: var(--brand-yellow);
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
+    padding: 5px 12px; border-radius: 20px;
+    font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;
 }
 
-.card-actions {
-    margin-top: auto; /* Empuja botones al fondo */
-    display: flex;
-    gap: 10px;
-}
+.card-actions { margin-top: auto; display: flex; gap: 10px; }
 
-/* Botón de eliminar (Basura) */
 .close {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #666;
-    width: 45px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: transparent; border: 1px solid rgba(255,255,255,0.1);
+    color: #666; width: 45px; border-radius: 8px; cursor: pointer;
+    transition: var(--transition); display: flex; align-items: center; justify-content: center;
 }
 .close:hover {
-    color: var(--brand-red);
-    border-color: var(--brand-red);
+    color: var(--brand-red); border-color: var(--brand-red);
     background: rgba(238, 37, 26, 0.1);
 }
 
-/* =========================================
-   6. AUTH CARDS (LOGIN/REGISTER)
-   ========================================= */
-.auth-card {
-  background: rgba(20, 20, 20, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 450px;
-  text-align: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-.auth-icon {
-    font-size: 3rem;
-    color: var(--brand-red);
-    margin-bottom: 15px;
-}
-
-.auth-title { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
-.auth-subtitle { color: var(--text-gray); margin-bottom: 30px; }
-
-.auth-footer { margin-top: 20px; color: #666; font-size: 0.9rem; }
-.auth-footer a { color: var(--brand-yellow); font-weight: bold; }
-
 /* SPINNER */
 .loadingSpinnerContainer {
-  position: fixed;
-  top: 0; right: 0; bottom: 0; left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 5000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+  background-color: rgba(0, 0, 0, 0.5); z-index: 5000;
+  display: flex; justify-content: center; align-items: center;
 }
 .loadingSpinner {
   width: 64px; height: 64px;
@@ -346,165 +362,4 @@ textarea.form-control {
   border-radius: 50%;
   animation: spin 1.2s linear infinite;
 }
-
-/* --- AGREGAR AL FINAL DE INDEX.CSS --- */
-
-/* Botón Fantasma (Transparente con borde sutil) */
-.btn-ghost {
-  background: transparent;
-  color: #a1a1aa; /* Gris claro */
-  padding: 8px 12px;
-  border-radius: 8px;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border: 1px solid transparent; /* Para que no salte al hacer hover */
-}
-
-.btn-ghost:hover {
-  color: var(--brand-yellow);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Iconos de navegación un poco más grandes */
-.btn-ghost svg {
-  font-size: 1.1rem;
-}
-
-/* RESPONSIVE: En celulares, ocultamos el texto y dejamos solo iconos */
-@media (max-width: 768px) {
-  .nav-text {
-    display: none; /* Oculta la palabra "Catálogo", "Perfil", etc. */
-  }
-  
-  .header {
-    padding: 10px 15px; /* Reduce padding en móvil */
-  }
-  
-  .header ul {
-    gap: 10px; /* Reduce espacio entre iconos */
-  }
-
-  .btn-ghost {
-    padding: 10px; /* Botones más cuadrados para tocar con el dedo */
-  }
-}
-
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* ======================================================
-   PEGAR ESTO AL FINAL DE TU INDEX.CSS ACTUAL
-   ====================================================== */
-
-/* --- 1. MEJORA DE INPUTS (Campos de texto) --- */
-.form-input {
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo más oscuro para contraste */
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Borde sutil */
-  border-radius: 12px; /* Bordes más redondeados */
-  color: #fff;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-  /* Aseguramos espacio para el icono a la izquierda */
-  padding-left: 45px !important; 
-}
-
-/* Efecto al hacer clic en el input */
-.form-input:focus {
-  border-color: #eee21a; /* Amarillo al enfocar */
-  background-color: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 0 4px rgba(238, 226, 26, 0.15); /* Resplandor amarillo suave */
-  outline: none;
-}
-
-/* Asegurar que los iconos dentro del input se vean bien */
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon {
-  position: absolute;
-  left: 15px;
-  color: #888;
-  pointer-events: none; /* Para poder dar clic a través del icono */
-  transition: color 0.3s;
-  z-index: 10;
-}
-
-/* Cuando el input tiene foco, el icono también se ilumina */
-.input-wrapper:focus-within .input-icon {
-  color: #eee21a;
-}
-
-/* Botón del ojo (ver contraseña) */
-.password-toggle {
-  position: absolute;
-  right: 15px;
-  background: transparent;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: color 0.3s;
-}
-.password-toggle:hover {
-  color: #eee21a;
-}
-
-
-/* --- 2. ANIMACIÓN DE FONDO (Solo Login y Registro) --- */
-
-.auth-container {
-  position: relative;
-  overflow: hidden; /* Importante para que las luces no rompan la página */
-  z-index: 1;
-}
-
-/* Luz Roja (#ee251a) */
-.auth-container::before {
-  content: '';
-  position: absolute;
-  top: 10%;
-  left: 20%;
-  width: 350px;
-  height: 350px;
-  background: #ee251a;
-  border-radius: 50%;
-  filter: blur(120px); /* Difuminado fuerte */
-  opacity: 0.4;
-  z-index: -1;
-  animation: floatRed 8s ease-in-out infinite alternate;
-}
-
-/* Luz Amarilla (#eee21a) */
-.auth-container::after {
-  content: '';
-  position: absolute;
-  bottom: 10%;
-  right: 20%;
-  width: 300px;
-  height: 300px;
-  background: #eee21a;
-  border-radius: 50%;
-  filter: blur(100px); /* Difuminado fuerte */
-  opacity: 0.3;
-  z-index: -1;
-  animation: floatYellow 10s ease-in-out infinite alternate;
-}
-
-/* Animaciones de movimiento */
-@keyframes floatRed {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-40px, 40px) scale(1.1); }
-}
-
-@keyframes floatYellow {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, -40px) scale(1.1); }
-}

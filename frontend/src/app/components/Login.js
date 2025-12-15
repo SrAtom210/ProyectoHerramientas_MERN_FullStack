@@ -8,10 +8,9 @@ import Spinner from './Spinner';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  // Estado local para ver contraseña (mejora de UX)
   const [showPassword, setShowPassword] = useState(false);
-
   const { email, password } = formData;
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -34,8 +33,7 @@ function Login() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const userData = { email, password };
-    dispatch(login(userData));
+    dispatch(login({ email, password }));
   };
 
   if (isLoading) return <Spinner />;
@@ -43,41 +41,43 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        
-        {/* Icono Principal con efecto de brillo */}
-        <div className="auth-header">
-            <div className="auth-icon-circle">
-                <FaHammer />
-            </div>
-            <h1 className="auth-title">TaLadrando</h1>
-            <p className="auth-subtitle">Acceso a herramientas profesionales</p>
+        {/* Encabezado */}
+        <div className="auth-icon-circle">
+          <FaHammer />
         </div>
+        <h1 className="auth-title">TaLadrando</h1>
+        <p className="auth-subtitle">Accede a tu panel de herramientas</p>
 
-        <form onSubmit={onSubmit} className="auth-form">
+        <form onSubmit={onSubmit}>
+          
+          {/* GRUPO 1: EMAIL */}
           <div className="form-group">
             <label htmlFor="email" className="form-label">Correo Electrónico</label>
+            
+            {/* CORRECCIÓN: El wrapper solo envuelve al input y al icono */}
             <div className="input-wrapper">
-              <FaEnvelope className="input-icon left" />
               <input
                 type="email"
-                className="form-input with-icon"
+                className="form-input"
                 id="email"
                 name="email"
                 value={email}
-                placeholder="usuario@ejemplo.com"
+                placeholder="nombre@ejemplo.com"
                 onChange={onChange}
                 required
               />
+              <FaEnvelope className="input-icon" />
             </div>
           </div>
 
+          {/* GRUPO 2: PASSWORD */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">Contraseña</label>
+            
             <div className="input-wrapper">
-              <FaLock className="input-icon left" />
               <input
                 type={showPassword ? "text" : "password"}
-                className="form-input with-icon with-toggle"
+                className="form-input"
                 id="password"
                 name="password"
                 value={password}
@@ -85,6 +85,8 @@ function Login() {
                 onChange={onChange}
                 required
               />
+              <FaLock className="input-icon" />
+              
               <button 
                 type="button" 
                 className="password-toggle"
@@ -95,13 +97,13 @@ function Login() {
             </div>
           </div>
 
-          <button type="submit" className="btn-block btn-primary">
+          <button type="submit" className="btn-primary">
             Ingresar <FaSignInAlt />
           </button>
         </form>
 
         <div className="auth-footer">
-          ¿Nuevo aquí? <Link to="/registro">Crear cuenta gratis</Link>
+          ¿No tienes cuenta? <Link to="/registro">Regístrate aquí</Link>
         </div>
       </div>
     </div>
