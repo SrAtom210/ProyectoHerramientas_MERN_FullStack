@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// ⚠️ AQUÍ ESTÁ EL ARREGLO DEL NETWORK ERROR
-// Usa tu dominio real y el puerto 8000 (o 5000 si usaste ese en el backend)
+
 const API_URL = 'http://penrose512.jcarlos19.com:8000/api/usuarios/';
 
 // Registrar usuario

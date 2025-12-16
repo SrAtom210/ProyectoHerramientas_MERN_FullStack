@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FaSignInAlt, FaHammer, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaSignInAlt, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { login, reset } from '../features/authSlice';
 import Spinner from './Spinner';
+import logoImg from '../../assets/LogoSinFondo.png';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -42,9 +43,9 @@ function Login() {
     <div className="auth-container">
       <div className="auth-card">
         {/* Encabezado */}
-        <div className="auth-icon-circle">
-          <FaHammer />
-        </div>
+        <div className="auth-icon-circle" style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
+          <img src={logoImg} alt="Logo" style={{ width: '100px' }} />
+          </div>
         <h1 className="auth-title">TaLadrando</h1>
         <p className="auth-subtitle">Accede a tu panel de herramientas</p>
 

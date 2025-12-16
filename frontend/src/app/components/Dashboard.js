@@ -4,16 +4,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import HerramientaItem from './HerramientaItem';
 import Spinner from './Spinner';
 import { reset, obtenerHerramientas } from '../features/herramientasSlice';
-import { FaSearch } from 'react-icons/fa';
+// ✅ Importamos la acción de recomendaciones
+import { obtenerRecomendaciones } from '../features/rentaSlice';
+import { FaSearch, FaStar } from 'react-icons/fa';
 
 function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
+  // Estado de Herramientas (Catálogo)
   const { herramientas, isLoading, isError, message } = useSelector(
     (state) => state.herramientas
   );
+  // Estado de Recomendaciones (Viene de rentaSlice)
+  const { recomendaciones } = useSelector((state) => state.rentas);
 
   // ✅ ESTADO PARA EL BUSCADOR
   const [busqueda, setBusqueda] = useState('');
@@ -24,7 +29,9 @@ function Dashboard() {
     if (!user) {
       navigate('/login');
     } else {
+      // ✅ Cargar TODO: Herramientas globales y Recomendaciones personales
       dispatch(obtenerHerramientas());
+      dispatch(obtenerRecomendaciones());
     }
 
     return () => {
@@ -52,6 +59,33 @@ function Dashboard() {
     <div className="dashboard-container">
       <section className="container">
         
+        {/* === SECCIÓN DE RECOMENDACIONES (NUEVO) === */}
+        {recomendaciones && recomendaciones.length > 0 && (
+            <div style={{ marginBottom: '50px' }}>
+                <div className="dashboard-heading" style={{textAlign: 'left', marginBottom: '20px'}}>
+                    <h2 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px', color: '#fff' }}>
+                        <FaStar color="#fca311" /> Recomendado para ti
+                    </h2>
+                    <p style={{ color: '#a1a1aa', fontSize: '0.9rem', marginLeft: '34px' }}>
+                        Basado en tu historial de rentas recientes
+                    </p>
+                </div>
+
+                <div className="herramientas-grid">
+                    {recomendaciones.map((herramienta) => (
+                        <HerramientaItem 
+                            key={herramienta._id} 
+                            herramienta={herramienta}
+                        />
+                    ))}
+                </div>
+                
+                {/* Separador visual */}
+                <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '40px 0' }} />
+            </div>
+        )}
+
+        {/* === SECCIÓN DE CATÁLOGO GENERAL === */}
         <div className="dashboard-heading">
             <h1 className="dashboard-title">
                 Catálogo Disponible <span style={{color: '#fca311'}}>.</span>

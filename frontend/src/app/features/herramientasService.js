@@ -27,13 +27,19 @@ const obtenerHerramientas = async (token) => {
 
 // Borrar herramienta
 const borrarHerramienta = async (herramientaId, token) => {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    };
-    const response = await axios.delete(API_URL + herramientaId, config);
-    return response.data;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  // ⚠️ ERROR COMÚN: Si API_URL ya tiene '/', no la agregues. 
+  // Pero si API_URL es '.../api/herramientas', NECESITAS la barra:
+  // Asegúrate que la URL final quede tipo: .../api/herramientas/12345
+  
+  const response = await axios.delete(API_URL + herramientaId, config); // <--- OJO AQUI
+
+  return response.data;
 };
 
 // Actualizar herramienta

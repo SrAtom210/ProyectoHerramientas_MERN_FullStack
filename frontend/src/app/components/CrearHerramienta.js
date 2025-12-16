@@ -14,7 +14,7 @@ function CrearHerramienta() {
     <div className="dashboard-container">
         <div className="container">
             <button 
-                className='btn-ghost' 
+                className='btn-back' 
                 onClick={() => navigate('/mis-herramientas')}
                 style={{ marginBottom: '20px' }}
             >

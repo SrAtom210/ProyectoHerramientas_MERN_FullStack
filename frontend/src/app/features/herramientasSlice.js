@@ -43,16 +43,20 @@ export const borrarHerramienta = createAsyncThunk(
     async (id, thunkAPI) => {
         try {
             const token = thunkAPI.getState().auth.user.token;
-            await herramientasService.borrarHerramienta(id, token);
-            return id; // Retornamos el ID para borrarlo del estado local
+            return await herramientasService.borrarHerramienta(id, token);
         } catch (error) {
-            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+            // Extraer mensaje de error
+            const message = 
+                (error.response && error.response.data && error.response.data.message) || 
+                error.message || 
+                error.toString();
+            
             return thunkAPI.rejectWithValue(message);
         }
     }
 );
 
-// Actualizar herramienta (NUEVO)
+// Actualizar herramienta
 export const actualizarHerramienta = createAsyncThunk(
     'herramientas/actualizar',
     async ({ id, herramientaData }, thunkAPI) => {
@@ -70,7 +74,7 @@ export const herramientasSlice = createSlice({
     name: 'herramienta',
     initialState,
     reducers: {
-        reset: (state) => initialState // Resetea todo el estado de herramientas
+        reset: (state) => initialState 
     },
     extraReducers: (builder) => {
         builder
@@ -100,19 +104,27 @@ export const herramientasSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+            // ✅ CORRECCIÓN 1: Manejo de Fulfilled (borrado exitoso)
             .addCase(borrarHerramienta.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.herramientas = state.herramientas.filter((h) => h._id !== action.payload);
+                // El backend devuelve { id: "..." }, así que usamos action.payload.id
+                state.herramientas = state.herramientas.filter(
+                    (h) => h._id !== action.payload.id
+                );
             })
-            // Cases para Actualizar (AGREGAR ESTO)
+            // ✅ CORRECCIÓN 2: Manejo de Rejected (borrado fallido)
+            .addCase(borrarHerramienta.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload; // Aquí guardamos el mensaje "No puedes borrar..."
+            })
             .addCase(actualizarHerramienta.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(actualizarHerramienta.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                // Buscamos la herramienta vieja en el array y la reemplazamos por la nueva
                 state.herramientas = state.herramientas.map((herramienta) =>
                     herramienta._id === action.payload._id ? action.payload : herramienta
                 );
