@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// Asegúrate que esta URL coincida con tu backend (puerto 8000)
+// ✅ Usamos tu dominio para que funcione en red/producción
 const API_URL = 'http://penrose512.jcarlos19.com:8000/api/rentas/';
 
-// Crear una renta
+// Crear una nueva renta
 const crearRenta = async (rentaData, token) => {
   const config = {
     headers: {
@@ -15,7 +15,8 @@ const crearRenta = async (rentaData, token) => {
   return response.data;
 };
 
-// Obtener mis rentas
+// Obtener mis rentas (Lo que yo renté)
+// ✅ CORRECCIÓN: Agregamos 'mis-rentas' a la URL
 const obtenerMisRentas = async (token) => {
   const config = {
     headers: {
@@ -27,32 +28,51 @@ const obtenerMisRentas = async (token) => {
   return response.data;
 };
 
-// ✅ NUEVO: Función para Devolver / Cancelar renta
-const cancelarRenta = async (rentaId, token) => {
+// Obtener mis clientes (Quien me ha rentado a mí)
+// ✅ FALTABA ESTA FUNCIÓN
+const obtenerClientes = async (token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
 
-  // Petición DELETE a: http://.../api/rentas/:id
-  const response = await axios.delete(API_URL + rentaId, config);
+  const response = await axios.get(API_URL + 'mis-clientes', config);
   return response.data;
 };
 
-const obtenerClientes = async (token) => {
+// Cancelar / Devolver una renta
+// ✅ FALTABA ESTA FUNCIÓN
+const cancelarRenta = async (id, token) => {
   const config = {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   };
-  const response = await axios.get(API_URL + 'mis-clientes', config);
+
+  const response = await axios.delete(API_URL + id, config);
+  return response.data;
+};
+
+// Obtener recomendaciones (NUEVO)
+// ✅ PARA EL DASHBOARD
+const obtenerRecomendaciones = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.get(API_URL + 'recomendaciones', config);
   return response.data;
 };
 
 const rentaService = {
   crearRenta,
   obtenerMisRentas,
-  cancelarRenta,
-  obtenerClientes, // ✅ Exportar
+  obtenerClientes,      // Nuevo
+  cancelarRenta,        // Nuevo
+  obtenerRecomendaciones // Nuevo
 };
 
 export default rentaService;

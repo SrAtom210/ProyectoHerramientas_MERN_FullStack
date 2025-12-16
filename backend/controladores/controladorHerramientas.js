@@ -77,6 +77,18 @@ const actualizarHerramienta = asyncHandler(async (req, res) => {
         throw new Error('Acceso no autorizado');
     }
 
+    // ✅ VALIDACIÓN NUEVA: Verificar si hay rentas activas
+    const rentasActivas = await Renta.findOne({
+        herramienta: req.params.id,
+        fechaFin: { $gte: new Date() } // Si la fecha fin es hoy o en el futuro
+    });
+
+    if (rentasActivas) {
+        res.status(400);
+        throw new Error('No puedes editar esta herramienta porque está siendo rentada actualmente.');
+    }
+
+    // Si no hay rentas, procedemos a actualizar
     let datosActualizar = req.body;
     
     if (req.file) {
@@ -101,10 +113,22 @@ const borrarHerramienta = asyncHandler(async (req, res) => {
         throw new Error('Herramienta no encontrada');
     }
 
-    // Verificar dueño
     if (herramienta.user.toString() !== req.usuario.id) {
         res.status(401);
         throw new Error('Acceso no autorizado');
+    }
+
+    // ✅ 2. VALIDACIÓN DE SEGURIDAD:
+    // Verificamos si hay rentas ACTIVAS (que terminan hoy o en el futuro) para esta herramienta.
+    // Si hay una renta activa, PROHIBIMOS borrarla.
+    const rentasActivas = await Renta.findOne({
+        herramienta: req.params.id,
+        fechaFin: { $gte: new Date() } // Fecha fin mayor o igual a hoy
+    });
+
+    if (rentasActivas) {
+        res.status(400);
+        throw new Error('No puedes borrar esta herramienta porque tiene una renta activa en curso.');
     }
 
     await herramienta.deleteOne(); 

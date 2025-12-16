@@ -1,16 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import rentaService from './rentaService';
 
+// 1. ESTADO INICIAL
 const initialState = {
-  rentas: [],       // Lo que yo renté
-  clientes: [],     // ✅ NUEVO: Gente que me rentó a mí
+  rentas: [],
+  clientes: [],
+  recomendaciones: [], // <--- Asegúrate de tener esto
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
 };
 
-// Crear nueva renta
+// --- THUNKS ---
+
+// 1. Crear renta
 export const crearRenta = createAsyncThunk(
   'rentas/crear',
   async (rentaData, thunkAPI) => {
@@ -18,16 +22,13 @@ export const crearRenta = createAsyncThunk(
       const token = thunkAPI.getState().auth.user.token;
       return await rentaService.crearRenta(rentaData, token);
     } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Obtener mis rentas
+// 2. Obtener mis rentas
 export const obtenerMisRentas = createAsyncThunk(
   'rentas/obtenerMias',
   async (_, thunkAPI) => {
@@ -35,16 +36,27 @@ export const obtenerMisRentas = createAsyncThunk(
       const token = thunkAPI.getState().auth.user.token;
       return await rentaService.obtenerMisRentas(token);
     } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// ✅ NUEVO: Cancelar / Devolver renta
+// 3. Obtener clientes
+export const obtenerClientes = createAsyncThunk(
+  'rentas/obtenerClientes',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await rentaService.obtenerClientes(token);
+    } catch (error) {
+      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// 4. Cancelar renta
 export const cancelarRenta = createAsyncThunk(
   'rentas/cancelar',
   async (id, thunkAPI) => {
@@ -52,22 +64,19 @@ export const cancelarRenta = createAsyncThunk(
       const token = thunkAPI.getState().auth.user.token;
       return await rentaService.cancelarRenta(id, token);
     } catch (error) {
-      const message =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// ✅ NUEVO THUNK: Obtener Clientes
-export const obtenerClientes = createAsyncThunk(
-  'rentas/obtenerClientes',
+// 5. ✅ ESTA ES LA QUE TE FALTABA O ESTABA MAL COPIADA
+export const obtenerRecomendaciones = createAsyncThunk(
+  'rentas/recomendaciones',
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      return await rentaService.obtenerClientes(token);
+      return await rentaService.obtenerRecomendaciones(token);
     } catch (error) {
       const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
@@ -83,10 +92,8 @@ export const rentaSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // --- CREAR RENTA ---
-      .addCase(crearRenta.pending, (state) => {
-        state.isLoading = true;
-      })
+      // Crear
+      .addCase(crearRenta.pending, (state) => { state.isLoading = true; })
       .addCase(crearRenta.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -97,11 +104,8 @@ export const rentaSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      
-      // --- OBTENER RENTAS ---
-      .addCase(obtenerMisRentas.pending, (state) => {
-        state.isLoading = true;
-      })
+      // Obtener Mias
+      .addCase(obtenerMisRentas.pending, (state) => { state.isLoading = true; })
       .addCase(obtenerMisRentas.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -112,35 +116,27 @@ export const rentaSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-
-      // --- ✅ NUEVO: CANCELAR RENTA ---
-      .addCase(cancelarRenta.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(cancelarRenta.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        // Filtramos la renta eliminada del estado local para que desaparezca instantáneamente
-        // (Asumiendo que el backend devuelve { id: "..." })
-        state.rentas = state.rentas.filter((renta) => renta._id !== action.payload.id);
-      })
-      .addCase(cancelarRenta.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(obtenerClientes.pending, (state) => {
-        state.isLoading = true;
-      })
+      // Clientes
+      .addCase(obtenerClientes.pending, (state) => { state.isLoading = true; })
       .addCase(obtenerClientes.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.clientes = action.payload; // Guardamos en el array 'clientes'
+        state.clientes = action.payload;
       })
       .addCase(obtenerClientes.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      // Cancelar
+      .addCase(cancelarRenta.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.rentas = state.rentas.filter((renta) => renta._id !== action.payload.id);
+      })
+      // ✅ RECOMENDACIONES (Asegúrate de tener este caso también)
+      .addCase(obtenerRecomendaciones.fulfilled, (state, action) => {
+        state.recomendaciones = action.payload;
       });
   },
 });
